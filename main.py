@@ -10,8 +10,9 @@ clock = pygame.time.Clock()
 
 running = True
 show_menu = True
+is_paused = False
 
-background = pygame.image.load('./resources/background.png')
+background = pygame.image.load('./resources/background.jpeg')
 background = pygame.transform.scale(background, (1280, 720))
 
 pygame.freetype.init()
@@ -24,6 +25,10 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and not show_menu:
+                    is_paused = not is_paused
+                    show_menu = is_paused
             if event.type == pygame.MOUSEBUTTONDOWN and show_menu:
                 mouse_pos = event.pos
                 if play_button.collidepoint(mouse_pos):
@@ -35,8 +40,9 @@ if __name__ == "__main__":
         if show_menu:
             play_button, quit_button = draw_menu(screen, font, background)
         else:
-            screen.blit(background, (0, 0))
-            # TODO: RENDER THE GAME HERE
+            if not is_paused:
+                screen.blit(background, (0, 0))
+                # TODO: RENDER THE GAME HERE
 
         pygame.display.flip()
         clock.tick(60)  # limits FPS to 60
