@@ -1,26 +1,44 @@
 import pygame
+import pygame.freetype
+import os
+from utils.utils import *
 
 # Initialisation de pygame
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
+
 running = True
+show_menu = True
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+background = pygame.image.load('./resources/background.png')
+background = pygame.transform.scale(background, (1280, 720))
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
+pygame.freetype.init()
+font_path = os.path.join('resources', 'fonts', 'AutourOne.ttf')
+font = pygame.freetype.Font(font_path, 36)
 
-    # TODO: RENDER THE GAME HERE
+if __name__ == "__main__":
+    while running:
+        # pygame.QUIT event means the user clicked X to close your window
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN and show_menu:
+                mouse_pos = event.pos
+                if play_button.collidepoint(mouse_pos):
+                    fade_out(screen, background)
+                    show_menu = False
+                elif quit_button.collidepoint(mouse_pos):
+                    running = False
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+        if show_menu:
+            play_button, quit_button = draw_menu(screen, font, background)
+        else:
+            screen.blit(background, (0, 0))
+            # TODO: RENDER THE GAME HERE
 
-    clock.tick(60)  # limits FPS to 60
+        pygame.display.flip()
+        clock.tick(60)  # limits FPS to 60
 
-pygame.quit()
+    pygame.quit()
