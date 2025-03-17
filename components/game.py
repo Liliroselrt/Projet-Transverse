@@ -77,6 +77,74 @@ class Fish:
                 pygame.draw.circle(screen, (255, 255, 255), (eye_x, self.y + self.height // 2), 3)
 
 
+class Trash:
+    def __init__(self, screen_width, screen_height):
+        self.speed_x = random.choice([-2, -1, 1, 2])
+        self.speed_y = random.uniform(-0.5, 0.5)
+
+        # Charge une image aléatoire d'un déchet
+        trash_num = random.randint(1, 14)
+        try:
+            self.image = pygame.image.load(f'./resources/assets/trash/{trash_num}.png').convert_alpha()
+
+            # Original dimensions
+            orig_width = self.image.get_width()
+            orig_height = self.image.get_height()
+
+            # Calcule l'échelle pour une bonne taille
+            target_width = random.randint(30, 70)
+            scale_factor = target_width / orig_width
+
+            self.width = target_width
+            self.height = int(orig_height * scale_factor)
+
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        except:
+            self.image = None
+            self.color = random.choice([(100, 100, 100), (150, 150, 150), (200, 200, 200)])
+            self.width = random.randint(40, 80)
+            self.height = random.randint(20, 40)
+
+        if self.speed_x > 0:
+            self.x = -self.width
+        else:
+            self.x = screen_width
+
+        self.y = random.randint(screen_height // 2, screen_height - 50)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.caught = False
+        self.value = 1  # Chaque déchet vaut 1 point
+
+    def update(self, screen_width, screen_height):
+        if not self.caught:
+            self.x += self.speed_x
+            self.y += self.speed_y
+
+            if random.random() < 0.02:
+                self.speed_y = random.uniform(-0.5, 0.5)
+
+            # Keep trash within screen bounds
+            if self.y < screen_height // 2:
+                self.y = screen_height // 2
+                self.speed_y *= -1
+            elif self.y > screen_height - 50:
+                self.y = screen_height - 50
+                self.speed_y *= -1
+
+            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+            if (self.x < -self.width and self.speed_x < 0) or (self.x > screen_width and self.speed_x > 0):
+                return True
+        return False
+
+    def draw(self, screen):
+        if not self.caught:
+            if self.image:
+                screen.blit(self.image, (self.x, self.y))
+            else:
+                pygame.draw.rect(screen, self.color, self.rect)
+
+
 class Player:
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
@@ -101,17 +169,18 @@ class Player:
 
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
-    def cast_line(self, keys):
-        if keys[pygame.K_SPACE]:
-            self.is_fishing = True
+    def cast_line(self):
+        self.is_fishing = not self.is_fishing
 
+    def update_line(self):
         if self.is_fishing:
             if self.line_length < self.max_line_length:
                 self.line_length += 5
-
-        if keys[pygame.K_UP]:
-            self.is_fishing = False
-            self.line_length = 0
+        else:
+            if self.line_length > 0:
+                self.line_length -= 10
+                if self.line_length < 0:
+                    self.line_length = 0
 
     def get_hook_position(self):
         return (self.rod_x, self.rod_y + self.line_length)
@@ -135,6 +204,7 @@ class Game:
         self.screen_height = screen_height
         self.player = Player(screen_width, screen_height)
         self.fishes = []
+        self.trashes = []
         self.score = 0
         self.game_time = 60  # 60s de jeu
         self.start_time = pygame.time.get_ticks()
@@ -149,13 +219,17 @@ class Game:
 
         keys = pygame.key.get_pressed()
         self.player.move(keys)
-        self.player.cast_line(keys)
+        self.player.update_line()
 
         # Ajoute des poissons aléatoirement
         if len(self.fishes) < 10 and random.random() < 0.02:
             self.fishes.append(Fish(self.screen_width, self.screen_height))
 
-        # Regarde si le poisson est attrapé
+        # Ajoute des déchets aléatoirement
+        if len(self.trashes) < 8 and random.random() < 0.02:
+            self.trashes.append(Trash(self.screen_width, self.screen_height))
+
+        # Regarde si le poisson ou un déchet est attrapé
         hook_pos = self.player.get_hook_position()
         hook_rect = pygame.Rect(hook_pos[0] - 5, hook_pos[1] - 5, 10, 10)
 
@@ -164,8 +238,16 @@ class Game:
                 self.fishes.remove(fish)
             elif self.player.is_fishing and hook_rect.colliderect(fish.rect) and not fish.caught:
                 fish.caught = True
-                self.score += fish.value
+                self.score -= 3  # Perd 3 points pour un poisson
                 self.fishes.remove(fish)
+
+        for trash in self.trashes[:]:
+            if trash.update(self.screen_width, self.screen_height):
+                self.trashes.remove(trash)
+            elif self.player.is_fishing and hook_rect.colliderect(trash.rect) and not trash.caught:
+                trash.caught = True
+                self.score += trash.value  # Gagne 1 point par déchet
+                self.trashes.remove(trash)
 
         return remaining_time == 0  # Retourne True si le temps est écoulé
 
@@ -176,6 +258,10 @@ class Game:
         # Affiche les poissons
         for fish in self.fishes:
             fish.draw(screen)
+
+        # Affiche les déchets
+        for trash in self.trashes:
+            trash.draw(screen)
 
         # Affiche le score et le temps restant
         current_time = pygame.time.get_ticks()
@@ -197,6 +283,8 @@ def run_game(screen, clock):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return False
+                elif event.key == pygame.K_SPACE:
+                    game.player.cast_line()
 
         game_over = game.update()
         game.draw(screen)

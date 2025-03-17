@@ -16,10 +16,8 @@ def main():
     clock = pygame.time.Clock()
 
     # Affiche le menu
-    menu = Menu(screen, clock)
-    quit_game = menu.run()
+    Menu(screen, clock).run()
 
-    # Clean up
     pygame.quit()
 
 
