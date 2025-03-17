@@ -13,10 +13,10 @@ show_menu = True
 show_rules = False
 
 # Chargement des images
-background = pygame.image.load('resources/background.jpeg')
+background = pygame.image.load('resources/fonts/background.jpeg')
 background = pygame.transform.scale(background, (1280, 720))
 
-rules_background = pygame.image.load('resources/FondRegle.jpg')
+rules_background = pygame.image.load('resources/fonts/FondRegle.jpg')
 rules_background = pygame.transform.scale(rules_background, (1280, 720))
 
 # Chargement de la police
