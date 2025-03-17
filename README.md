@@ -75,7 +75,8 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
 
 - **Répartition des Tâches :**
     - **ReadMe** : Lili-Rose
-    - **main** : 
+    - **main** : Paolo 
+    - 
 
 # Tests et Validation
 
