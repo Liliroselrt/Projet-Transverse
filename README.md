@@ -67,7 +67,10 @@ Ainsi qu'un classement.
 - **Chronologie du Projet :**
 
     - __*A chercher*__ : Recherche de l'idée du jeu, mise en place des outils
-    - __*3 mars :*__ répartition des tâches, suites des recherches
+    - __*3 mars :*__ Répartition des tâches, suites des recherches
+    - __*17 mars :*__ Avancé de la mise en page : menu principal, mise en place des éléments principaux. 
+Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au maximum le jeu avec un historique, fluidité, etc
+    - 
 
 
 - **Répartition des Tâches :**
