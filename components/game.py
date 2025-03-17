@@ -139,7 +139,7 @@ class Game:
         self.game_time = 60  # 60s de jeu
         self.start_time = pygame.time.get_ticks()
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 24)
-        self.background = pygame.image.load('./resources/background.jpeg')
+        self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen_width, screen_height))
 
     def update(self):
