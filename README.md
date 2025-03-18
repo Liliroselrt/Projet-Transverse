@@ -1,5 +1,5 @@
 # Projet-Transverse
-# Presentation Générale
+# 📖 Presentation Générale
 
 **Contributeurs :**  
 - Youssef Ghedammsi : 25% du travail 
@@ -20,13 +20,13 @@ Ce projet a pour but de
 - Bibliothèque : maths, random, json, time
 - Outils : Pycharm, Git Hub, Notion, Pygame
 
-GitHub : pour stocker simultanément l'avancée du projet. 
+🤝 GitHub : pour stocker simultanément l'avancée du projet. 
 
-PyCharm : pour coder
+✍️ PyCharm : pour coder
 
-Notion : pour la répartition des tâches, pour avoir une vue global du projet
+📚 Notion : pour la répartition des tâches, pour avoir une vue global du projet
 
-Pygame : pour le design 
+🧱 Pygame : pour le design 
 
 **Installation :**
 
@@ -38,7 +38,7 @@ Installation de Pygame sans encombre
 On a appris à jongler entre les 4 outils pour coordonner nos travaux.
 
 
-# Documentation Technique
+# 📄 Documentation Technique
 
 **Algorithme du jeu :**
   - __*Menu :*__ Affichage d'une fenêtre pour décider de lancer le jeu. 
@@ -62,7 +62,7 @@ Ainsi qu'un classement.
 
 
 
-# Journal de Bord
+# 📆 Journal de Bord
 
 - **Chronologie du Projet :**
 
@@ -78,6 +78,6 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
     - **main** : Paolo 
     - 
 
-# Tests et Validation
+# ✅ Tests et Validation
 
 -**Stratégies de Test :**
