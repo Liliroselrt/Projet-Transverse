@@ -1,8 +1,5 @@
 import pygame
 import pygame.freetype
-import os
-
-from components.game import Game, run_game
 from utils.utils import *
 
 from components.menu import Menu
