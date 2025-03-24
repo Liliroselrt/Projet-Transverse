@@ -2,6 +2,8 @@ import pygame
 import random
 import os
 
+from components.fishing import FishingLine
+
 
 class Fish:
     def __init__(self, screen_width, screen_height):
@@ -153,11 +155,11 @@ class Player:
         self.boat_x = screen_width // 2 - self.boat_img.get_width() // 2
         self.boat_y = screen_height // 3
 
-        # Cane à pêche
+        # Define rod position before creating fishing line
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
-        self.rod_y = self.boat_y
-        self.line_length = 0
-        self.max_line_length = screen_height - self.boat_y - 20
+        self.rod_y = self.boat_y  # Rod positioned at top of boat
+
+        self.fishing_line = FishingLine(self.rod_x, self.rod_y, screen_height - self.boat_y - 20, self.boat_y)
         self.is_fishing = False
         self.score = 0
 
@@ -173,29 +175,17 @@ class Player:
         self.is_fishing = not self.is_fishing
 
     def update_line(self):
-        if self.is_fishing:
-            if self.line_length < self.max_line_length:
-                self.line_length += 5
-        else:
-            if self.line_length > 0:
-                self.line_length -= 10
-                if self.line_length < 0:
-                    self.line_length = 0
+        self.fishing_line.update(self.rod_x, self.rod_y, self.is_fishing, 1 / 60)  # Assuming 60 FPS
 
     def get_hook_position(self):
-        return (self.rod_x, self.rod_y + self.line_length)
+        return self.fishing_line.get_hook_position()
 
     def draw(self, screen):
         # Le bateau
         screen.blit(self.boat_img, (self.boat_x, self.boat_y))
 
-        # La câne à pêche
-        pygame.draw.line(screen, (139, 69, 19), (self.rod_x, self.rod_y),
-                         (self.rod_x, self.rod_y + self.line_length), 2)
-
-        if self.is_fishing and self.line_length > 0:
-            hook_x, hook_y = self.get_hook_position()
-            pygame.draw.circle(screen, (192, 192, 192), (hook_x, hook_y), 5)
+        # Draw fishing line
+        self.fishing_line.draw(screen)
 
 
 class Game:
