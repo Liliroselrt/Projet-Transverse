@@ -31,7 +31,7 @@ def lancer_canne(angle, gravity):
     t = np.linspace(0, t_max, num=50)
 
     x = v0 * np.cos(angle_rad) * t
-    y = v0 * np.sin(angle_rad) * t - 0.5 * g * t ** 2
+    y = v0 * np.sin(angle_rad) * t - 0.5 * g * t **
 
     return x, y
 
@@ -59,4 +59,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
 
