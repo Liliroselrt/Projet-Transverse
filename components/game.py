@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 import os
 
 from components.fishing import FishingLine
@@ -163,11 +164,22 @@ class Player:
         self.is_fishing = False
         self.score = 0
 
+        self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 18)
+
     def move(self, keys):
         if keys[pygame.K_LEFT] and self.boat_x > 0:
             self.boat_x -= 3
         if keys[pygame.K_RIGHT] and self.boat_x < self.screen_width - self.boat_img.get_width():
             self.boat_x += 3
+
+        self.rod_x = self.boat_x + self.boat_img.get_width() // 2
+
+        # Ajoutez le réglage de l'angle avec les touches UP/DOWN
+        if not self.is_fishing:  # Vérifier que le joueur ne pêche pas
+            if keys[pygame.K_UP]:
+                self.fishing_line.adjust_angle(1)  # Augmenter l'angle
+            if keys[pygame.K_DOWN]:
+                self.fishing_line.adjust_angle(-1)  # Diminuer l'angle
 
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
@@ -184,8 +196,26 @@ class Player:
         # Le bateau
         screen.blit(self.boat_img, (self.boat_x, self.boat_y))
 
+        # Dessiner l'indicateur d'angle si le joueur ne pêche pas
+        if not self.is_fishing:
+            self.draw_angle_indicator(screen)
+
         # Dessiner la ligne de pêche
         self.fishing_line.draw(screen)
+
+    def draw_angle_indicator(self, screen):
+        # Dessiner une ligne rouge pour indiquer l'angle de la canne à pêche
+        angle_rad = self.fishing_line.angle_rad
+        line_length = 30
+        end_x = self.rod_x + line_length * math.cos(angle_rad)
+        end_y = self.rod_y - line_length * math.sin(angle_rad)
+
+        # Affiche l'indicateur d'angle
+        pygame.draw.line(screen, (255, 0, 0), (self.rod_x, self.rod_y), (end_x, end_y), 2)
+
+        # Affiche le texte de l'angle
+        self.font.render_to(screen, (self.rod_x - 40, self.rod_y - 20), f"{int(self.fishing_line.angle_degrees)}°",
+                            (255, 255, 255))
 
 
 class Game:
@@ -236,7 +266,7 @@ class Game:
                 self.trashes.remove(trash)
             elif self.player.is_fishing and hook_rect.colliderect(trash.rect) and not trash.caught:
                 trash.caught = True
-                self.score += 3 # Gagne 3 points par déchet
+                self.score += 3  # Gagne 3 points par déchet
                 self.trashes.remove(trash)
 
         return remaining_time == 0  # Retourne True si le temps est écoulé

@@ -16,6 +16,7 @@ class FishingLine:
         # Paramètres physiques
         self.gravity = 9.81
         self.initial_velocity = 60.0
+        self.angle_degrees = 60
         self.angle_rad = math.radians(60)  # Angle de lancement de 60 degrés
 
         # Paramètres de la ligne d'eau (coordonnée y où l'eau commence)
@@ -28,6 +29,16 @@ class FishingLine:
         # Paramètres de transition pour l'entrée dans l'eau
         self.water_transition = 0.0  # 0.0 = air, 1.0 = complètement dans l'eau
         self.transition_speed = 0.1  # Vitesse de la transition
+
+    def set_angle(self, angle_degrees):
+        # Limitez l'angle entre 30 et 80 degrés pour une pêche réaliste.
+        self.angle_degrees = max(30, min(80, angle_degrees))
+        self.angle_rad = math.radians(self.angle_degrees)
+
+    def adjust_angle(self, delta):
+        # Ne permettre le réglage de l'angle que lorsque l'on ne pêche pas
+        if not self.is_casting:
+            self.set_angle(self.angle_degrees + delta)
 
     def update(self, rod_x, rod_y, is_casting, delta_time):
         # Calculer le déplacement du bateau/canne à pêche
