@@ -226,7 +226,7 @@ class Game:
         self.fishes = []
         self.trashes = []
         self.score = 0
-        self.game_time = 60  # 60s de jeu
+        self.game_time = 90  # 90s de jeu
         self.start_time = pygame.time.get_ticks()
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 24)
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
