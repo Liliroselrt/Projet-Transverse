@@ -228,7 +228,7 @@ class Game:
                 self.fishes.remove(fish)
             elif self.player.is_fishing and hook_rect.colliderect(fish.rect) and not fish.caught:
                 fish.caught = True
-                self.score -= 3  # Perd 3 points pour un poisson
+                self.score -= 1  # Perd 1 points pour un poisson
                 self.fishes.remove(fish)
 
         for trash in self.trashes[:]:
@@ -236,7 +236,7 @@ class Game:
                 self.trashes.remove(trash)
             elif self.player.is_fishing and hook_rect.colliderect(trash.rect) and not trash.caught:
                 trash.caught = True
-                self.score += trash.value  # Gagne 1 point par déchet
+                self.score += 3 # Gagne 3 point par déchet
                 self.trashes.remove(trash)
 
         return remaining_time == 0  # Retourne True si le temps est écoulé
