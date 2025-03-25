@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 import os
 
 from components.fishing import FishingLine
@@ -15,7 +16,7 @@ class Fish:
         try:
             self.image = pygame.image.load(f'./resources/assets/fishs/{fish_num}.png').convert_alpha()
 
-            # Original dimensions
+            # Dimensions originales
             orig_width = self.image.get_width()
             orig_height = self.image.get_height()
 
@@ -55,7 +56,7 @@ class Fish:
             if random.random() < 0.02:
                 self.speed_y = random.uniform(-0.5, 0.5)
 
-            # Keep fish within screen bounds
+            # Maintenir le poisson dans les limites de l'écran
             if self.y < screen_height // 2:
                 self.y = screen_height // 2
                 self.speed_y *= -1
@@ -89,7 +90,7 @@ class Trash:
         try:
             self.image = pygame.image.load(f'./resources/assets/trash/{trash_num}.png').convert_alpha()
 
-            # Original dimensions
+            # Dimensions originales
             orig_width = self.image.get_width()
             orig_height = self.image.get_height()
 
@@ -125,7 +126,7 @@ class Trash:
             if random.random() < 0.02:
                 self.speed_y = random.uniform(-0.5, 0.5)
 
-            # Keep trash within screen bounds
+            # Maintenir les déchets dans les limites de l'écran
             if self.y < screen_height // 2:
                 self.y = screen_height // 2
                 self.speed_y *= -1
@@ -155,13 +156,15 @@ class Player:
         self.boat_x = screen_width // 2 - self.boat_img.get_width() // 2
         self.boat_y = screen_height // 3
 
-        # Define rod position before creating fishing line
+        # Définir la position de la canne avant de créer la ligne de pêche
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
-        self.rod_y = self.boat_y  # Rod positioned at top of boat
+        self.rod_y = self.boat_y  # Canne positionnée au sommet du bateau
 
         self.fishing_line = FishingLine(self.rod_x, self.rod_y, screen_height - self.boat_y - 20, self.boat_y)
         self.is_fishing = False
         self.score = 0
+
+        self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 18)
 
     def move(self, keys):
         if keys[pygame.K_LEFT] and self.boat_x > 0:
@@ -171,11 +174,20 @@ class Player:
 
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
+        # Ajoutez le réglage de l'angle avec les touches UP/DOWN
+        if not self.is_fishing:  # Vérifier que le joueur ne pêche pas
+            if keys[pygame.K_UP]:
+                self.fishing_line.adjust_angle(1)  # Augmenter l'angle
+            if keys[pygame.K_DOWN]:
+                self.fishing_line.adjust_angle(-1)  # Diminuer l'angle
+
+        self.rod_x = self.boat_x + self.boat_img.get_width() // 2
+
     def cast_line(self):
         self.is_fishing = not self.is_fishing
 
     def update_line(self):
-        self.fishing_line.update(self.rod_x, self.rod_y, self.is_fishing, 1 / 60)  # Assuming 60 FPS
+        self.fishing_line.update(self.rod_x, self.rod_y, self.is_fishing, 1 / 60)  # En supposant 60 FPS
 
     def get_hook_position(self):
         return self.fishing_line.get_hook_position()
@@ -184,8 +196,26 @@ class Player:
         # Le bateau
         screen.blit(self.boat_img, (self.boat_x, self.boat_y))
 
-        # Draw fishing line
+        # Dessiner l'indicateur d'angle si le joueur ne pêche pas
+        if not self.is_fishing:
+            self.draw_angle_indicator(screen)
+
+        # Dessiner la ligne de pêche
         self.fishing_line.draw(screen)
+
+    def draw_angle_indicator(self, screen):
+        # Dessiner une ligne rouge pour indiquer l'angle de la canne à pêche
+        angle_rad = self.fishing_line.angle_rad
+        line_length = 30
+        end_x = self.rod_x + line_length * math.cos(angle_rad)
+        end_y = self.rod_y - line_length * math.sin(angle_rad)
+
+        # Affiche l'indicateur d'angle
+        pygame.draw.line(screen, (255, 0, 0), (self.rod_x, self.rod_y), (end_x, end_y), 2)
+
+        # Affiche le texte de l'angle
+        self.font.render_to(screen, (self.rod_x - 40, self.rod_y - 20), f"{int(self.fishing_line.angle_degrees)}°",
+                            (255, 255, 255))
 
 
 class Game:
@@ -196,7 +226,7 @@ class Game:
         self.fishes = []
         self.trashes = []
         self.score = 0
-        self.game_time = 60  # 60s de jeu
+        self.game_time = 90  # 90s de jeu
         self.start_time = pygame.time.get_ticks()
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 24)
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
@@ -228,7 +258,7 @@ class Game:
                 self.fishes.remove(fish)
             elif self.player.is_fishing and hook_rect.colliderect(fish.rect) and not fish.caught:
                 fish.caught = True
-                self.score -= 3  # Perd 3 points pour un poisson
+                self.score -= 1  # Perd 1 points pour un poisson
                 self.fishes.remove(fish)
 
         for trash in self.trashes[:]:
@@ -236,7 +266,7 @@ class Game:
                 self.trashes.remove(trash)
             elif self.player.is_fishing and hook_rect.colliderect(trash.rect) and not trash.caught:
                 trash.caught = True
-                self.score += trash.value  # Gagne 1 point par déchet
+                self.score += 3  # Gagne 3 points par déchet
                 self.trashes.remove(trash)
 
         return remaining_time == 0  # Retourne True si le temps est écoulé
@@ -281,7 +311,7 @@ def run_game(screen, clock):
         pygame.display.flip()
         clock.tick(60)
 
-    # Ecran de Game Over
+    # Écran de Game Over
     font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 48)
     game_over_text = f"Game Over! Score: {game.score}"
 
