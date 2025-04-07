@@ -183,7 +183,7 @@ class SpecialTrash(Trash):
         self.y = random.randint(screen_height // 2, screen_height - 50)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.caught = False
-        self.value = 10  # 10 points pour un déchet spécial
+        self.value = 50  # 50 points pour un déchet spécial
 
     def update(self, screen_width, screen_height):
         if not self.caught:
@@ -294,6 +294,13 @@ class Game:
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen_width, screen_height))
 
+        # La musique
+        self.volume = 0.5  # Volume à 50%
+        pygame.mixer.init()
+        pygame.mixer.music.load('resources/sound/music.mp3')
+        pygame.mixer.music.set_volume(self.volume)
+        pygame.mixer.music.play(-1)  # Répéter en boucle indéfiniment
+
     def update(self):
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) // 1000
@@ -340,7 +347,7 @@ class Game:
                 self.special_trashes.remove(special)
             elif self.player.is_fishing and hook_rect.colliderect(special.rect) and not special.caught:
                 special.caught = True
-                self.score += 10  # Gagne 10 points pour un déchet spécial
+                self.score += 50  # Gagne 50 points pour un déchet spécial
                 self.special_trashes.remove(special)
 
         return remaining_time == 0  # Retourne True si le temps est écoulé
