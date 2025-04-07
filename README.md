@@ -10,7 +10,11 @@
 
 **Description :**
 
-Ce projet a pour but de 
+__*Sujet :*__ Ce projet a pour but de sauver les poissons de la pollution et restaurer l'équilibre écologique. 
+
+__*Problématique :*__ Comment sensibiliser les joueurs à la pollution marine tout en proposant une expérience de jeu à la fois compétitive et ludique ?
+
+__*Description :*__ Deux joueurs s'affrontent dans une pêche compétitive. L'objectif ? Sauver les poissons des déchets humains. Comment ? En marquant le maximum de points en attrapant les déchets, tout en évitant les poissons qui doivent demeurer dans leur habitat.
 
 **Fonctionnalités Utilisées :**
 
@@ -18,15 +22,15 @@ Ce projet a pour but de
 **Technologies utilisées :**
 - Langage de programmation : Python 
 - Bibliothèque : maths, random, json, time
-- Outils : Pycharm, Git Hub, Notion, Pygame
+- Outils : Pycharm, Git Hub, Notion, Pygame, Filmora
 
-🤝 GitHub : pour stocker simultanément l'avancée du projet. 
+🤝 **GitHub :** pour stocker simultanément l'avancée du projet. 
 
-✍️ PyCharm : pour coder
+✍️ **PyCharm :** pour coder
 
-📚 Notion : pour la répartition des tâches, pour avoir une vue global du projet
+📚 **Notion :** pour la répartition des tâches, pour avoir une vue global du projet
 
-🧱 Pygame : pour le design 
+🧱 **Pygame :** pour le design 
 
 **Installation :**
 
@@ -44,8 +48,8 @@ On a appris à jongler entre les 4 outils pour coordonner nos travaux.
   - __*Menu :*__ Affichage d'une fenêtre pour décider de lancer le jeu. 
   
   - __*Les points :*__ le résultat des joueurs est affiché au cours du jeu
-  - __*Enregistrement :*__ le résultat obtenue est enregistré dans l'historique
-  - __*Fin du jeu :*__ Le gagnant est affiché avec les scores final de chaque joueur. 
+  - __*Enregistrement :*__ le résultat obtenu est enregistré dans l'historique
+  - __*Fin du jeu :*__ Le gagnant est affiché avec les scores finals de chaque joueur. 
 Ainsi qu'un classement. 
   - __*Enregistrement final :*__ enregistre dans l'historique le nom du joueur avec ses points
 
@@ -53,13 +57,12 @@ Ainsi qu'un classement.
 
   -__*Fonctions utiles :*__
         
-        - menu() : affiche le menu d'epreuves ; pas de parametres ; retoune le choix du joueur
-        - enregistrer_historique() : enregistre les resultat du joueur à une epreuve ; epreuve,choix,joueur
-        - historique_fin() : enregistre le resultat final du jeu ; equipe,epreuve
+        - menu() : affiche le menu d'epreuves ; pas de parametres ; 
 
 
 **Gestion des Entrées et Erreurs :**
 
+    - Gestion des entrées des joueurs : vérifie s'il y a bien un ou deux joueurs pour lancer le bon mode. 
 
 
 # 📆 Journal de Bord
@@ -72,7 +75,8 @@ Ainsi qu'un classement.
 Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au maximum le jeu avec un historique, fluidité, etc
     - __*24 mars :*__ Partie physique et avancée de la canne à pêche
     - __*25 mars :*__ Modification du temps et des points, transitions dans la courbe et création de l'angle de lancement.
-    - 
+    - __*7 avril :*__ Easter Egg, animation , continue code partie Lili-Rose et Youssef.  
+
 
 - 📚**Répartition des Tâches :**
     - **ReadMe** : Lili-Rose
@@ -81,7 +85,8 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
       - équation physique,
       - mouvement des joueurs, 
       - mise en scéne du début du jeu,
-      - design 
+       - choix d'une musique de fond,
+       - design 
     - **Paolo :**
       - mouvement des poissons,
       - affichage du temps,
@@ -94,7 +99,7 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
       - affichage des points,
       - affichage de fin de jeu, 
       - rentrer le nom des joueurs, 
-      - choix d'une musique de fond,
+
       - faire le menu des touches
     - **Youssef :**
       - historique des joueurs, 
@@ -103,4 +108,4 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
 
 # ✅ Tests et Validation
 
--**Stratégies de Test :**
+-**Stratégies de Test :** chaque partie de code est testé seule pu relier au code et re testé avec l'ensemble du jeu.
