@@ -18,8 +18,7 @@ Ce projet a pour but de
 **Technologies utilisées :**
 - Langage de programmation : Python 
 - Bibliothèque : maths, random, json, time
-- Outils : Pycharm, GitHub, Notion, Pygame, Filmora
-
+- Outils : Pycharm, Git Hub, Notion, Pygame
 
 🤝 GitHub : pour stocker simultanément l'avancée du projet. 
 

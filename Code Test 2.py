@@ -105,7 +105,127 @@ def main():
                     pygame.quit()
                     sys.exit()
 
+def nom_joueur():
+    nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
+    while nb_joueur not in [1, 2]:
+        nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
 
-# Démarrer le jeu
+    if nb_joueur == 1:
+        joueur = input("Entrez votre nom : ")
+        print(f"A toi de jouer {joueur} !")
+    else:
+        joueur1 = input("Entrez le premier nom : ")
+        joueur2 = input("Entrez le deuxième nom : ")
+        print(f"Bonne chance à vous {joueur1} et {joueur2} !")
+
+    afficher_jeu(nb_joueur)
+
+nom_joueur()
+
+# Dimensions de la fenêtre du jeu
+width, height = 800, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Jeu de pêche")
+
+# Couleurs
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+# Vitesse de déplacement
+speed = 5
+
+# Joueur 1 (et 2)
+joueur1_pos = [100, height // 2]
+joueur2_pos = [width - 100, height // 2]
+
+
+# Fonction pour afficher les informations du jeu
+def afficher_jeu(joueur1_pos, joueur2_pos, nb_joueur):
+    screen.fill(WHITE)
+
+    # Dessiner les joueurs
+    pygame.draw.rect(screen, BLACK, (joueur1_pos[0], joueur1_pos[1], 50, 50))  # Joueur 1
+    if nb_joueur == 2:
+        pygame.draw.rect(screen, (255, 0, 0), (joueur2_pos[0], joueur2_pos[1], 50, 50))  # Joueur 2
+
+    pygame.display.flip()
+
+
+# Fonction pour gérer les mouvements et actions
+def gerer_evenements(nb_joueur):
+    global joueur1_pos, joueur2_pos
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+
+        if event.type == pygame.KEYDOWN:
+            if nb_joueur == 1:
+                if event.key == pygame.K_UP:
+                    joueur1_pos[1] -= speed
+                if event.key == pygame.K_DOWN:
+                    joueur1_pos[1] += speed
+                if event.key == pygame.K_LEFT:
+                    joueur1_pos[0] -= speed
+                if event.key == pygame.K_RIGHT:
+                    joueur1_pos[0] += speed
+                if event.key == pygame.K_SPACE:
+                    print("Joueur 1 utilise la canne à pêche")
+
+            elif nb_joueur == 2:
+                # Joueur 1 (gauche)
+                if event.key == pygame.K_z:
+                    joueur1_pos[1] -= speed
+                if event.key == pygame.K_s:
+                    joueur1_pos[1] += speed
+                if event.key == pygame.K_q:
+                    joueur1_pos[0] -= speed
+                if event.key == pygame.K_d:
+                    joueur1_pos[0] += speed
+                if event.key == pygame.K_a:
+                    print("Joueur 1 utilise la canne à pêche")
+
+                # Joueur 2 (droite)
+                if event.key == pygame.K_UP:
+                    joueur2_pos[1] -= speed
+                if event.key == pygame.K_DOWN:
+                    joueur2_pos[1] += speed
+                if event.key == pygame.K_LEFT:
+                    joueur2_pos[0] -= speed
+                if event.key == pygame.K_RIGHT:
+                    joueur2_pos[0] += speed
+                if event.key == pygame.K_m:
+                    print("Joueur 2 utilise la canne à pêche")
+
+
+# Choisir le nombre de joueurs et afficher le menu
+def choisir_mode():
+    while True:
+        try:
+            nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
+            if nb_joueur in [1, 2]:
+                break
+            else:
+                print("Veuillez entrer 1 ou 2.")
+        except ValueError:
+            print("Veuillez entrer un nombre valide.")
+
+    afficher_menu_touches(nb_joueur)
+    return nb_joueur
+
+
+# Boucle principale du jeu
+def main():
+    nb_joueur = choisir_mode()
+
+    # Boucle du jeu
+    while True:
+        gerer_evenements(nb_joueur)
+        afficher_jeu(joueur1_pos, joueur2_pos, nb_joueur)
+
+        pygame.time.delay(30)  # Petit délai pour contrôler la vitesse du jeu
+
+
 if __name__ == "__main__":
     main()

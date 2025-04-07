@@ -3,171 +3,135 @@ import pygame.freetype
 import os
 from utils.utils import *
 
-# Initialisation de pygame
-pygame.init()
-screen = pygame.display.set_mode((1280, 720))
-clock = pygame.time.Clock()
-
-running = True
-show_menu = True
-show_rules = False
-
-# Chargement des images
-background = pygame.image.load('resources/assets/images/background.jpeg')
-background = pygame.transform.scale(background, (1280, 720))
-
-rules_background = pygame.image.load('resources/assets/images/FondRegle.jpg')
-rules_background = pygame.transform.scale(rules_background, (1280, 720))
-
-# Chargement de la police
-pygame.freetype.init()
-font_path = os.path.join('resources', 'fonts', 'AutourOne.ttf')
-font = pygame.freetype.Font(font_path, 36)
+from components.game import run_game
 
 
-def draw_rules(screen, font):
-    """ Affiche les règles du jeu et retourne le bouton retour. """
-    screen.blit(rules_background, (0, 0))
+def handle_name_input(screen, font, nb_joueur):
+    """Gère la saisie des noms des joueurs."""
 
-    # Titre
-    title_text, title_rect = font.render("Voici les règles du jeu :", (255, 255, 255))
-    title_x = (1280 - title_rect.width) // 2
-    screen.blit(title_text, (title_x, 100))
+    # Champs de saisie
+    input_box1 = pygame.Rect(440, 250, 400, 60)  # Champ Joueur 1
+    input_box2 = pygame.Rect(440, 350, 400, 60)  # Champ Joueur 2 (si 2 joueurs)
 
-    # Liste des règles
-    rules = [
-        "1. Attraper les déchets pour sauver les poissons !",
-        "2. Attention, ne pas attraper les poissons,\n",
-        " sinon vous perdez des points.",
-        "3. Gagnez le jeu en nettoyant l'océan !"
-    ]
+    active1 = True  # Indique si le champ 1 est actif
+    active2 = False  # Indique si le champ 2 est actif (pour 2 joueurs)
 
-    y_base = 200
-    for rule in rules:
-        text_surface, rect = font.render(rule, (255, 255, 255))
-        x = (1280 - rect.width) // 2
-        screen.blit(text_surface, (x, y_base))
-        y_base += 50
+    player1_name = ""
+    player2_name = ""
 
-    # Bouton retour
-    back_button = pygame.Rect(540, y_base + 50, 200, 50)
-    pygame.draw.rect(screen, (255, 0, 0), back_button, border_radius=10)
-    pygame.draw.rect(screen, (200, 0, 0), back_button, 2, border_radius=10)
+    color_inactive = (100, 100, 100)
+    color_active = (0, 150, 0)
+    color1 = color_active
+    color2 = color_inactive
 
-    text_surface, _ = font.render("Retour", (255, 255, 255))
-    text_x = back_button.x + (back_button.width - text_surface.get_width()) // 2
-    text_y = back_button.y + (back_button.height - text_surface.get_height()) // 2
-    screen.blit(text_surface, (text_x, text_y))
-
-    return back_button
-
-
-def draw_blurred_background(screen, background):
-    """ Crée un effet de flou sur le fond """
-    blurred_background = pygame.transform.smoothscale(background, (128, 72))
-    blurred_background = pygame.transform.smoothscale(blurred_background, (1280, 720))
-    screen.blit(blurred_background, (0, 0))
-
-
-def draw_menu(screen, font):
-    """ Affiche le menu principal avec les boutons Jouer, Quitter et Règles """
-    draw_blurred_background(screen, background)
-
-    # Fenêtre centrale
-    modal_width = 600
-    modal_height = 350
-    modal_x = (1280 - modal_width) // 2
-    modal_y = (720 - modal_height) // 2
-
-    modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
-    modal_surface = pygame.Surface((modal_width, modal_height), pygame.SRCALPHA)
-    pygame.draw.rect(modal_surface, (20, 20, 20, 230), modal_surface.get_rect(), border_radius=15)
-    screen.blit(modal_surface, modal_rect)
-
-    # Titre du jeu
-    title_font = pygame.freetype.Font(font.path, 60)
-    title_surface, _ = title_font.render("Trash & Splash", (255, 255, 255))
-    title_x = modal_x + (modal_width - title_surface.get_width()) // 2
-    screen.blit(title_surface, (title_x, modal_y + 20))
-
-    # Dimensions des boutons
-    button_width = 200
-    button_height = 60
-    spacing = 20
-
-    # Ajuster la position des boutons pour laisser de la place au titre
-    title_height = title_surface.get_height()
-    first_button_y = modal_y + title_height + 40  # Laisser de l'espace après le titre
-
-    # Bouton Jouer
-    play_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y, button_width, button_height)
-    pygame.draw.rect(screen, (46, 204, 113), play_button, border_radius=10)
-
-    # Bouton Règles
-    rules_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y + button_height + spacing, button_width, button_height)
-    pygame.draw.rect(screen, (52, 152, 219), rules_button, border_radius=10)
-
-    # Bouton Quitter
-    quit_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y + 2 * (button_height + spacing), button_width, button_height)
-    pygame.draw.rect(screen, (231, 76, 60), quit_button, border_radius=10)
-
-    # Texte des boutons
-    jouer_text, _ = font.render("JOUER", (255, 255, 255))
-    regles_text, _ = font.render("RÈGLES", (255, 255, 255))
-    quitter_text, _ = font.render("QUITTER", (255, 255, 255))
-
-    # Affichage du texte centré dans chaque bouton
-    screen.blit(jouer_text, (play_button.x + (button_width - jouer_text.get_width()) // 2,
-                             play_button.y + (button_height - jouer_text.get_height()) // 2))
-    screen.blit(regles_text, (rules_button.x + (button_width - regles_text.get_width()) // 2,
-                              rules_button.y + (button_height - regles_text.get_height()) // 2))
-    screen.blit(quitter_text, (quit_button.x + (button_width - quitter_text.get_width()) // 2,
-                               quit_button.y + (button_height - quitter_text.get_height()) // 2))
-
-    return play_button, rules_button, quit_button
-
-
-
-
-if __name__ == "__main__":
+    running = True
     while running:
-        screen.fill((0, 0, 0))  # Efface l'écran avant de dessiner
-        mouse_pos = pygame.mouse.get_pos()
+        screen.fill((255, 255, 255))  # Nettoyer l'écran
+
+        # Affichage du titre
+        title_text, _ = font.render("Entrez les noms des joueurs", (0, 0, 0))
+        screen.blit(title_text, (440, 100))
+
+        # Dessiner les champs de texte
+        pygame.draw.rect(screen, color1, input_box1, 2)
+        pygame.draw.rect(screen, color2, input_box2,
+                         2 if nb_joueur == 2 else 0)  # Afficher input 2 seulement si 2 joueurs
+
+        # Afficher les noms saisis
+        text_surface1 = font.render(player1_name, True, (0, 0, 0))
+        screen.blit(text_surface1, (input_box1.x + 10, input_box1.y + 15))
+
+        if nb_joueur == 2:
+            text_surface2 = font.render(player2_name, True, (0, 0, 0))
+            screen.blit(text_surface2, (input_box2.x + 10, input_box2.y + 15))
+
+        # Bouton de validation
+        start_button = pygame.Rect(440, 450, 200, 60)
+        pygame.draw.rect(screen, (46, 204, 113), start_button, border_radius=10)
+        start_text, _ = font.render("Commencer", (255, 255, 255))
+        screen.blit(start_text, (start_button.x + 50, start_button.y + 15))
+
+        pygame.display.flip()  # Mettre à jour l'écran
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                show_menu = True
-                show_rules = False
+                return None, None  # Quitter proprement
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if show_menu:
-                    play_button, rules_button, quit_button = draw_menu(screen, font)
+                # Vérifier si on clique sur un champ
+                if input_box1.collidepoint(event.pos):
+                    active1 = True
+                    active2 = False
+                elif input_box2.collidepoint(event.pos) and nb_joueur == 2:
+                    active1 = False
+                    active2 = True
+                else:
+                    active1 = active2 = False
 
-                    if play_button.collidepoint(event.pos):
-                        show_menu = False  # Ajouter ici le lancement du jeu
-                    elif rules_button.collidepoint(event.pos):
-                        show_menu = False
-                        show_rules = True
-                    elif quit_button.collidepoint(event.pos):
-                        running = False
+                # Mise à jour des couleurs
+                color1 = color_active if active1 else color_inactive
+                color2 = color_active if active2 else color_inactive
 
-                elif show_rules:
-                    back_button = draw_rules(screen, font)
-                    if back_button.collidepoint(event.pos):
-                        show_rules = False
-                        show_menu = True
+                # Vérifier si on clique sur le bouton de validation
+                if start_button.collidepoint(event.pos):
+                    return player1_name, player2_name  # Retourner les noms saisis
 
-        if show_menu:
-            draw_menu(screen, font)
-        elif show_rules:
-            draw_rules(screen, font)
-        else :
-            screen.blit(background, (0, 0))
+            if event.type == pygame.KEYDOWN:
+                # Saisie pour le champ actif
+                if active1:
+                    if event.key == pygame.K_RETURN:
+                        active1 = False
+                        active2 = True if nb_joueur == 2 else False
+                    elif event.key == pygame.K_BACKSPACE:
+                        player1_name = player1_name[:-1]
+                    else:
+                        player1_name += event.unicode
 
-        pygame.display.flip()
-        clock.tick(60)
+                elif active2:
+                    if event.key == pygame.K_RETURN:
+                        return player1_name, player2_name
+                    elif event.key == pygame.K_BACKSPACE:
+                        player2_name = player2_name[:-1]
+                    else:
+                        player2_name += event.unicode
 
-    pygame.quit()
+        pygame.time.Clock().tick(30)  # Limite à 30 FPS
+
+    return player1_name, player2_name
+
+def draw_player_selection(screen, font):
+    """ Affiche l'écran pour choisir le nombre de joueurs et leurs commandes """
+    screen.fill((255, 255, 255))  # Remplir l'écran avec du blanc pour ce menu
+
+    # Dimensions et positions
+    screen_width, screen_height = screen.get_size()
+    modal_width = 600
+    modal_height = 300
+    modal_x = (screen_width - modal_width) // 2
+    modal_y = (screen_height - modal_height) // 2
+
+    # Affichage du titre
+    title_text, title_rect = font.render("Sélectionner le nombre de joueurs", (0, 0, 0))
+    title_x = (1280 - title_rect.width) // 2
+    screen.blit(title_text, (title_x, 100))
+
+
+    # Bouton 1 Joueur
+    #one_player_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y, button_width,
+    #                              button_height)
+    #pygame.draw.rect(self.screen, (46, 204, 113), play_button, border_radius=10)
+
+
+    #self.screen.blit(jouer_text, (play_button.x + (button_width - jouer_text.get_width()) // 2,
+    #                          play_button.y + (button_height - jouer_text.get_height()) // 2))
+
+    # Bouton 2 Joueurs
+    two_players_button = pygame.Rect(440, 350, 400, 60)
+    pygame.draw.rect(screen, (52, 152, 219), two_players_button, border_radius=10)
+    two_players_text, _ = font.render("2 Joueurs", (255, 255, 255))
+    screen.blit(two_players_text, (two_players_button.x + (two_players_button.width - two_players_text.get_width()) // 2,
+                                  two_players_button.y + (two_players_button.height - two_players_text.get_height()) // 2))
+
+    pygame.display.flip()
+
+    return """one_player_button""""", two_players_button
