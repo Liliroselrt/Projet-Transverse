@@ -1,5 +1,5 @@
 # Projet-Transverse
-# Presentation Générale
+# 📖 Presentation Générale
 
 **Contributeurs :**  
 - Youssef Ghedammsi : 25% du travail 
@@ -20,13 +20,13 @@ Ce projet a pour but de
 - Bibliothèque : maths, random, json, time
 - Outils : Pycharm, Git Hub, Notion, Pygame
 
-GitHub : pour stocker simultanément l'avancée du projet. 
+🤝 GitHub : pour stocker simultanément l'avancée du projet. 
 
-PyCharm : pour coder
+✍️ PyCharm : pour coder
 
-Notion : pour la répartition des tâches, pour avoir une vue global du projet
+📚 Notion : pour la répartition des tâches, pour avoir une vue global du projet
 
-Pygame : pour le design 
+🧱 Pygame : pour le design 
 
 **Installation :**
 
@@ -38,7 +38,7 @@ Installation de Pygame sans encombre
 On a appris à jongler entre les 4 outils pour coordonner nos travaux.
 
 
-# Documentation Technique
+# 📄 Documentation Technique
 
 **Algorithme du jeu :**
   - __*Menu :*__ Affichage d'une fenêtre pour décider de lancer le jeu. 
@@ -62,7 +62,7 @@ Ainsi qu'un classement.
 
 
 
-# Journal de Bord
+# 📆 Journal de Bord
 
 - **Chronologie du Projet :**
 
@@ -70,14 +70,37 @@ Ainsi qu'un classement.
     - __*3 mars :*__ Répartition des tâches, suites des recherches
     - __*17 mars :*__ Avancé de la mise en page : menu principal, mise en place des éléments principaux. 
 Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au maximum le jeu avec un historique, fluidité, etc
+    - __*24 mars :*__ Partie physique et avancée de la canne à pêche
+    - __*25 mars :*__ Modification du temps et des points, transitions dans la courbe et création de l'angle de lancement.
     - 
 
-
-- **Répartition des Tâches :**
+- 📚**Répartition des Tâches :**
     - **ReadMe** : Lili-Rose
     - **main** : Paolo 
-    - 
+    - **Anaelle :**
+      - équation physique,
+      - mouvement des joueurs, 
+      - mise en scéne du début du jeu,
+      - design 
+    - **Paolo :**
+      - mouvement des poissons,
+      - affichage du temps,
+      - défini les touches de déplacement, 
+      - lie le design au code,
+      - lie le travail au chacun au code principal
+    - **Lili-Rose :**
+      - compteur entre les poissons et les déchets,
+      - menu de départ,
+      - affichage des points,
+      - affichage de fin de jeu, 
+      - rentrer le nom des joueurs, 
+      - choix d'une musique de fond,
+      - faire le menu des touches
+    - **Youssef :**
+      - historique des joueurs, 
+      - faire le splash,
+      - 1v1, ajout du 2e joueur
 
-# Tests et Validation
+# ✅ Tests et Validation
 
 -**Stratégies de Test :**
