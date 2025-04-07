@@ -148,6 +148,67 @@ class Trash:
                 pygame.draw.rect(screen, self.color, self.rect)
 
 
+class SpecialTrash(Trash):
+    def __init__(self, screen_width, screen_height):
+        # Vitesse plus élevée horizontalement
+        self.speed_x = random.choice([-6, -5.5, 5.5, 6])  # Vitesse doublée
+        self.speed_y = random.uniform(-2.0, 2.0)  # Mouvement vertical beaucoup plus vif
+
+        try:
+            self.image = pygame.image.load('./resources/assets/trash/special.png').convert_alpha()
+
+            # Dimensions originales
+            orig_width = self.image.get_width()
+            orig_height = self.image.get_height()
+
+            # Plus petit que les déchets normaux
+            target_width = random.randint(20, 40)  # Plus petit
+            scale_factor = target_width / orig_width
+
+            self.width = target_width
+            self.height = int(orig_height * scale_factor)
+
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        except:
+            self.image = None
+            self.color = (255, 215, 0)  # Couleur or pour le distinguer
+            self.width = random.randint(20, 40)
+            self.height = random.randint(15, 30)
+
+        if self.speed_x > 0:
+            self.x = -self.width
+        else:
+            self.x = screen_width
+
+        self.y = random.randint(screen_height // 2, screen_height - 50)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.caught = False
+        self.value = 10  # 10 points pour un déchet spécial
+
+    def update(self, screen_width, screen_height):
+        if not self.caught:
+            self.x += self.speed_x
+            self.y += self.speed_y
+
+            # Changements de direction plus fréquents
+            if random.random() < 0.04:  # Probabilité plus élevée de changer de direction
+                self.speed_y = random.uniform(-0.8, 0.8)
+
+            # Maintenir les déchets dans les limites de l'écran
+            if self.y < screen_height // 2:
+                self.y = screen_height // 2
+                self.speed_y *= -1
+            elif self.y > screen_height - 50:
+                self.y = screen_height - 50
+                self.speed_y *= -1
+
+            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+            if (self.x < -self.width and self.speed_x < 0) or (self.x > screen_width and self.speed_x > 0):
+                return True
+        return False
+
+
 class Player:
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
@@ -225,6 +286,7 @@ class Game:
         self.player = Player(screen_width, screen_height)
         self.fishes = []
         self.trashes = []
+        self.special_trashes = []
         self.score = 0
         self.game_time = 90  # 90s de jeu
         self.start_time = pygame.time.get_ticks()
@@ -249,6 +311,10 @@ class Game:
         if len(self.trashes) < 8 and random.random() < 0.02:
             self.trashes.append(Trash(self.screen_width, self.screen_height))
 
+        # Ajoute des déchets spéciaux rarement
+        if len(self.special_trashes) < 1 and random.random() < 0.001:  # Probabilité plus faible
+            self.special_trashes.append(SpecialTrash(self.screen_width, self.screen_height))
+
         # Regarde si le poisson ou un déchet est attrapé
         hook_pos = self.player.get_hook_position()
         hook_rect = pygame.Rect(hook_pos[0] - 5, hook_pos[1] - 5, 10, 10)
@@ -269,6 +335,14 @@ class Game:
                 self.score += 3  # Gagne 3 points par déchet
                 self.trashes.remove(trash)
 
+        for special in self.special_trashes[:]:
+            if special.update(self.screen_width, self.screen_height):
+                self.special_trashes.remove(special)
+            elif self.player.is_fishing and hook_rect.colliderect(special.rect) and not special.caught:
+                special.caught = True
+                self.score += 10  # Gagne 10 points pour un déchet spécial
+                self.special_trashes.remove(special)
+
         return remaining_time == 0  # Retourne True si le temps est écoulé
 
     def draw(self, screen):
@@ -282,6 +356,10 @@ class Game:
         # Affiche les déchets
         for trash in self.trashes:
             trash.draw(screen)
+
+        # Affiche les déchets spéciaux
+        for special in self.special_trashes:
+            special.draw(screen)
 
         # Affiche le score et le temps restant
         current_time = pygame.time.get_ticks()
