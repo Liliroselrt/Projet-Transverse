@@ -377,7 +377,7 @@ class Game:
         self.font.render_to(screen, (20, 50), f"Time: {remaining_time}", (255, 255, 255))
 
 
-def run_game(screen, clock):
+def run_game(screen, clock, nbjoueur, prenoms):
     game = Game(screen.get_width(), screen.get_height())
     game_over = False
 

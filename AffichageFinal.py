@@ -2,6 +2,9 @@ import pygame
 import sys
 import pygame.freetype  # Importation de pygame.freetype pour charger les polices
 
+"""Code pour l'affichage final : Victoire/défaite"""
+"""Objectif : fenêtre avec un classement, le gagnant mis en avant"""
+
 # Initialisation de pygame
 pygame.init()
 
@@ -40,9 +43,9 @@ def display_victory_screen(score1, score2):
         player2_color = BLACK
     elif score2 > score1:
         # Si Joueur 2 gagne
-        winner_text, winner_rect = title_font.render("Joueur 2 Gagnant ! 🎉", (BLUE))
+        winner_text, winner_rect = title_font.render("Joueur 2 Gagnant ! 🎉", (GREEN))
         player1_color = BLACK
-        player2_color = BLUE
+        player2_color = GREEN
     else:
         # Si match nul
         winner_text, winner_rect = title_font.render("Match Nul !", (BLACK))
@@ -80,47 +83,7 @@ def display_victory_screen(score1, score2):
     pygame.display.flip()
 
 
-# Fonction principale
-def main():
-    # Attends que la logique de jeu te fournisse les scores des deux joueurs
-    # Exemple : score1 = joueur1.get_score() et score2 = joueur2.get_score()
 
-    # Afficher l'écran de victoire avec les scores des joueurs
-    # Remplace les scores par les valeurs réelles du jeu
-    score1 = 0  # Remplacer par le score réel de Joueur 1
-    score2 = 0  # Remplacer par le score réel de Joueur 2
-    display_victory_screen(score1, score2)
-
-    # Boucle d'événements
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:  # Rejouer
-                    print("Rejouer !")  # Ajouter la logique de relance du jeu ici
-                    return
-                if event.key == pygame.K_q:  # Quitter
-                    pygame.quit()
-                    sys.exit()
-
-def nom_joueur():
-    nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
-    while nb_joueur not in [1, 2]:
-        nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
-
-    if nb_joueur == 1:
-        joueur = input("Entrez votre nom : ")
-        print(f"A toi de jouer {joueur} !")
-    else:
-        joueur1 = input("Entrez le premier nom : ")
-        joueur2 = input("Entrez le deuxième nom : ")
-        print(f"Bonne chance à vous {joueur1} et {joueur2} !")
-
-    afficher_jeu(nb_joueur)
-
-nom_joueur()
 
 # Dimensions de la fenêtre du jeu
 width, height = 800, 600
@@ -207,11 +170,16 @@ def choisir_mode():
             if nb_joueur in [1, 2]:
                 break
             else:
-                print("Veuillez entrer 1 ou 2.")
+                choix_mode = int(input("Veuillez entrer 1 ou 2."))
+                if choix_mode == 1:
+                    mode_individuel()
+                else :
+                    mode_multijoueur()
+
         except ValueError:
             print("Veuillez entrer un nombre valide.")
 
-    afficher_menu_touches(nb_joueur)
+    #afficher_menu_touches(nb_joueur)
     return nb_joueur
 
 

@@ -5,6 +5,23 @@ from utils.utils import *
 
 from components.game import run_game
 
+"""Fenêtre pour choisir le nombre de joueur et entrez leur nom
+Objectif : après les saisies faites, le bon mode de jeu se lance
+avec le nom des joueurs qui apparait au niveau des points."""
+
+def nom_joueur():
+    # marche mais pas pour un affichage
+    nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
+    while nb_joueur not in [1, 2]:
+        nb_joueur = int(input("Entrez le nombre de joueurs (1 ou 2) : "))
+    if nb_joueur == 1:
+        joueur = input("Entrez votre nom : ")
+        print(f"A toi de jouer {joueur} !")
+    else:
+        joueur1 = input("Entrez le premier nom : ")
+        joueur2 = input("Entrez le deuxième nom : ")
+        print(f"Bonne chance à vous {joueur1} et {joueur2} !")
+
 
 def handle_name_input(screen, font, nb_joueur):
     """Gère la saisie des noms des joueurs."""
@@ -117,13 +134,13 @@ def draw_player_selection(screen, font):
 
 
     # Bouton 1 Joueur
-    #one_player_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y, button_width,
-    #                              button_height)
-    #pygame.draw.rect(self.screen, (46, 204, 113), play_button, border_radius=10)
+    one_player_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y, button_width,
+                                  button_height)
+    pygame.draw.rect(self.screen, (46, 204, 113), play_button, border_radius=10)
 
 
-    #self.screen.blit(jouer_text, (play_button.x + (button_width - jouer_text.get_width()) // 2,
-    #                          play_button.y + (button_height - jouer_text.get_height()) // 2))
+    self.screen.blit(jouer_text, (play_button.x + (button_width - jouer_text.get_width()) // 2,
+                              play_button.y + (button_height - jouer_text.get_height()) // 2))
 
     # Bouton 2 Joueurs
     two_players_button = pygame.Rect(440, 350, 400, 60)
@@ -134,4 +151,4 @@ def draw_player_selection(screen, font):
 
     pygame.display.flip()
 
-    return """one_player_button""""", two_players_button
+    return one_player_button, two_players_button

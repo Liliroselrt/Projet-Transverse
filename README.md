@@ -85,8 +85,8 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
       - équation physique,
       - mouvement des joueurs, 
       - mise en scéne du début du jeu,
-       - choix d'une musique de fond,
-       - design 
+    - choix d'une musique de fond,
+      - design 
     - **Paolo :**
       - mouvement des poissons,
       - affichage du temps,
@@ -98,8 +98,7 @@ Objectif suivant : ajouter l'équation pour la canne à pêche et améliorer au 
       - menu de départ,
       - affichage des points,
       - affichage de fin de jeu, 
-      - rentrer le nom des joueurs, 
-
+      - rentrer le nom des joueurs,
       - faire le menu des touches
     - **Youssef :**
       - historique des joueurs, 

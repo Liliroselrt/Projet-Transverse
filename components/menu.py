@@ -2,6 +2,8 @@ import pygame
 import pygame.freetype
 import os
 from components.game import run_game
+from utils.Menu_touche import PlayerSetupMenu
+
 
 
 class Menu:
@@ -105,9 +107,9 @@ class Menu:
         # Liste des règles
         rules = [
             "1. Attraper les déchets pour sauver les poissons !",
-            "2. Attention, ne pas attraper les poissons,\n",
-            " sinon vous perdez des points.",
-            "3. Gagnez le jeu en nettoyant l'océan !"
+            "2. Attention, vous perdez des points\n",
+            " si vous attrapez des poissons",
+            "3. Gagnez le jeu en faisant un maximum de points"
         ]
 
         y_base = 200
@@ -148,12 +150,17 @@ class Menu:
                         play_button, rules_button, quit_button = self.draw_menu()
 
                         if play_button.collidepoint(event.pos):
-                            # Démarre le jeu
-                            quit_game = run_game(self.screen, self.clock)
-                            if quit_game:
-                                self.running = False
-                                return False
-                            self.show_menu = True
+                            # Lance le menu de configuration des joueurs
+                            player_setup = PlayerSetupMenu(self.screen, self.font)
+                            nb_joueurs, prenoms = player_setup.run()
+
+                            if nb_joueurs is not None and prenoms:
+                                # Tu peux ici transmettre nb_joueurs et prenoms à run_game si nécessaire
+                                quit_game = run_game(self.screen, self.clock, nb_joueurs, prenoms)
+                                if quit_game:
+                                    self.running = False
+                                    return False
+                                self.show_menu = True
 
                         elif rules_button.collidepoint(event.pos):
                             self.show_menu = False
