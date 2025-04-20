@@ -1,8 +1,8 @@
-<h1 style="text-align: center;">
+<h1 align=center>
     <p>Trash & Splash</p>
 </h1>
 
-<p style="text-align: center;">
+<p align=center>
     <strong>Sauver les poissons de la pollution et restaurer l'équilibre écologique. </strong>
 </p>
 
