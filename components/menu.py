@@ -18,7 +18,8 @@ class Menu:
         self.running = True
         self.show_menu = True
         self.show_rules = False
-
+        self.show_historique = False
+        
         # Charge les images
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen.get_width(), screen.get_height()))
@@ -73,6 +74,10 @@ class Menu:
                                   button_height)
         pygame.draw.rect(self.screen, (46, 204, 113), play_button, border_radius=10)
 
+        # Bouton Historique
+        histo_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y + 1 * (button_height + spacing), button_width, button_height)
+        pygame.draw.rect(self.screen, (241, 196, 15), histo_button, border_radius=10)
+        
         # Bouton Règles
         rules_button = pygame.Rect(modal_x + (modal_width - button_width) // 2,
                                    first_button_y + button_height + spacing, button_width, button_height)
@@ -85,18 +90,22 @@ class Menu:
 
         # Bouton text
         jouer_text, _ = self.font.render("JOUER", (255, 255, 255))
+        historique_text, _ = self.font.render("HISTORIQUE", (0, 0, 0))
         regles_text, _ = self.font.render("RÈGLES", (255, 255, 255))
         quitter_text, _ = self.font.render("QUITTER", (255, 255, 255))
 
         # Texte centré dans chaque bouton
-        self.screen.blit(jouer_text, (play_button.x + (button_width - jouer_text.get_width()) // 2,
-                                      play_button.y + (button_height - jouer_text.get_height()) // 2))
+         self.screen.blit(solo_text,
+                         (play_button.x + (button_width - solo_text.get_width()) // 2,
+                          play_button.y + (button_height - solo_text.get_height()) // 2))
+        self.screen.blit(historique_text, (histo_button.x + (button_width - historique_text.get_width()) // 2,
+                                           histo_button.y + (button_height - historique_text.get_height()) // 2))
         self.screen.blit(regles_text, (rules_button.x + (button_width - regles_text.get_width()) // 2,
                                        rules_button.y + (button_height - regles_text.get_height()) // 2))
         self.screen.blit(quitter_text, (quit_button.x + (button_width - quitter_text.get_width()) // 2,
                                         quit_button.y + (button_height - quitter_text.get_height()) // 2))
 
-        return play_button, rules_button, quit_button
+        return play_button, histo_button, rules_button, quit_button
 
     def draw_rules(self):
         """ Displays game rules and return button """
@@ -149,14 +158,15 @@ class Menu:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     self.show_menu = True
                     self.show_rules = False
+                    self.show_historique = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.show_menu:
-                        play_button, rules_button, quit_button = self.draw_menu()
+                        play_button, histo_button, rules_button, quit_button = self.draw_menu()
 
                         if play_button.collidepoint(event.pos):
                             # Lance le menu de configuration des joueurs
-                            player_setup = PlayerSetupMenu(self.screen, self.font)
+                            player_setup = PlayerSetupMenu(self.screen, self.font, 1)
                             nb_joueurs, prenoms = player_setup.run()
 
                             if nb_joueurs is not None and prenoms:
@@ -165,7 +175,11 @@ class Menu:
                                     self.running = False
                                     return False
                                 self.show_menu = True
-
+                                
+                         elif histo_button.collidepoint(event.pos):
+                            afficher_historique(self.screen, self.font)
+                            self.show_menu = True
+                             
                         elif rules_button.collidepoint(event.pos):
                             self.show_menu = False
                             self.show_rules = True
