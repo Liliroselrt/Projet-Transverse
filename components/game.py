@@ -4,6 +4,15 @@ import math
 import os
 
 from components.fishing import FishingLine
+from components.historique import save_score
+
+ARROWS_P1 = dict(left=pygame.K_LEFT,  right=pygame.K_RIGHT,
+                 up=pygame.K_UP,     down=pygame.K_DOWN,
+                 cast=pygame.K_SPACE)
+
+AZERTY_P2 = dict(left=pygame.K_q, right=pygame.K_d,
+                 up=pygame.K_z, down=pygame.K_s,
+                 cast=pygame.K_e)
 
 
 class Fish:
@@ -210,39 +219,48 @@ class SpecialTrash(Trash):
 
 
 class Player:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, start_x=None, controls=None, name=""):
         self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.controls = controls or ARROWS_P1  # défaut : les flèches
+        self.name = name
+        
+         # image du bateau
         self.boat_img = pygame.image.load('./resources/assets/barque.png').convert_alpha()
         self.boat_img = pygame.transform.scale(self.boat_img, (120, 60))
-        self.boat_x = screen_width // 2 - self.boat_img.get_width() // 2
+
+           # position initiale
+        if start_x is None:
+            self.boat_x = screen_width // 2 - self.boat_img.get_width() // 2
+        else:
+            self.boat_x = start_x
         self.boat_y = screen_height // 3
 
         # Définir la position de la canne avant de créer la ligne de pêche
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
         self.rod_y = self.boat_y  # Canne positionnée au sommet du bateau
 
-        self.fishing_line = FishingLine(self.rod_x, self.rod_y, screen_height - self.boat_y - 20, self.boat_y)
+        self.fishing_line = FishingLine(self.rod_x, self.rod_y, 
+                                        screen_height - self.boat_y - 20, self.boat_y)
         self.is_fishing = False
         self.score = 0
 
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 18)
 
     def move(self, keys):
-        if keys[pygame.K_LEFT] and self.boat_x > 0:
+        if keys[self.controls['left']] and self.boat_x > 0:
             self.boat_x -= 3
-        if keys[pygame.K_RIGHT] and self.boat_x < self.screen_width - self.boat_img.get_width():
+        if keys[self.controls['right']] and self.boat_x < self.screen_width - self.boat_img.get_width():
             self.boat_x += 3
 
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
         # Ajoutez le réglage de l'angle avec les touches UP/DOWN
         if not self.is_fishing:  # Vérifier que le joueur ne pêche pas
-            if keys[pygame.K_UP]:
+            if  keys[self.controls['up']]:
                 self.fishing_line.adjust_angle(1)  # Augmenter l'angle
-            if keys[pygame.K_DOWN]:
+            if keys[self.controls['down']]:
                 self.fishing_line.adjust_angle(-1)  # Diminuer l'angle
-
-        self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
     def cast_line(self):
         self.is_fishing = not self.is_fishing
@@ -280,10 +298,14 @@ class Player:
 
 
 class Game:
-    def __init__(self, screen_width=1280, screen_height=720):
+    def __init__(self, screen_width=1280, screen_height=720, players=None):
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.player = Player(screen_width, screen_height)
+        if players is None:
+        self.player = Player(screen_width, screen_height,  
+                             start_x=screen_width // 2, controls=ARROWS_P1)])
+        else : 
+        self.players = players
         self.fishes = []
         self.trashes = []
         self.special_trashes = []
@@ -307,8 +329,9 @@ class Game:
         remaining_time = max(0, self.game_time - elapsed_time)
 
         keys = pygame.key.get_pressed()
-        self.player.move(keys)
-        self.player.update_line()
+        for p in self.players:
+            p.move(keys)
+            p.update_line()
 
         # Ajoute des poissons aléatoirement
         if len(self.fishes) < 10 and random.random() < 0.02:
@@ -323,39 +346,51 @@ class Game:
             self.special_trashes.append(SpecialTrash(self.screen_width, self.screen_height))
 
         # Regarde si le poisson ou un déchet est attrapé
-        hook_pos = self.player.get_hook_position()
-        hook_rect = pygame.Rect(hook_pos[0] - 5, hook_pos[1] - 5, 10, 10)
 
         for fish in self.fishes[:]:
-            if fish.update(self.screen_width, self.screen_height):
-                self.fishes.remove(fish)
-            elif self.player.is_fishing and hook_rect.colliderect(fish.rect) and not fish.caught:
-                fish.caught = True
-                self.score -= 1  # Perd 1 points pour un poisson
-                self.fishes.remove(fish)
-
+            for p in self.players:
+                if p.is_fishing and fish.rect.collidepoint(*p.fishing_line.hook_pos):
+                    p.score -= 1 # Pert 1 point par poisson
+                    self.fishes.remove(fish)
+                    break
+            else:
+                if fish.update(self.screen_width, self.screen_height):
+                    self.fishes.remove(fish)
+                    
         for trash in self.trashes[:]:
             if trash.update(self.screen_width, self.screen_height):
                 self.trashes.remove(trash)
-            elif self.player.is_fishing and hook_rect.colliderect(trash.rect) and not trash.caught:
-                trash.caught = True
-                self.score += 3  # Gagne 3 points par déchet
-                self.trashes.remove(trash)
+                continue
+            for p in self.players:
+                if p.is_fishing and trash.rect.collidepoint(*p.fishing_line.hook_pos):
+                    trash.caught = True
+                    p.score += 3  # Gagne 3 points par déchet
+                    self.trashes.remove(trash)
+                    break
 
         for special in self.special_trashes[:]:
             if special.update(self.screen_width, self.screen_height):
                 self.special_trashes.remove(special)
-            elif self.player.is_fishing and hook_rect.colliderect(special.rect) and not special.caught:
-                special.caught = True
-                self.score += 50  # Gagne 50 points pour un déchet spécial
-                self.special_trashes.remove(special)
+                continue
+            for p in self.players:
+                if p.is_fishing and special.rect.collidepoint(*p.fishing_line.hook_pos):
+                    special.caught = True
+                    p.score += 50  # Gagne 50 points pour un déchet spécial
+                    self.special_trashes.remove(special)
+                    break
 
         return remaining_time == 0  # Retourne True si le temps est écoulé
 
     def draw(self, screen):
         screen.blit(self.background, (0, 0))
-        self.player.draw(screen)
+        for p in self.players:
+            p.draw(screen)
 
+        y_base = 10
+        for p in self.players:
+            txt, _ = self.font.render(f"{p.name} : {p.score}", (255, 255, 255))
+            screen.blit(txt, (10, y_base))
+            y_base += txt.get_height() + 5
         # Affiche les poissons
         for fish in self.fishes:
             fish.draw(screen)
@@ -373,29 +408,44 @@ class Game:
         elapsed_time = (current_time - self.start_time) // 1000
         remaining_time = max(0, self.game_time - elapsed_time)
 
-        self.font.render_to(screen, (20, 20), f"Score: {self.score}", (255, 255, 255))
+        #self.font.render_to(screen, (20, 20), f"Score: {self.score}", (255, 255, 255))
         self.font.render_to(screen, (20, 50), f"Time: {remaining_time}", (255, 255, 255))
 
 
 def run_game(screen, clock, nbjoueur, prenoms):
-    game = Game(screen.get_width(), screen.get_height())
+    w, h = screen.get_width(), screen.get_height()
+    players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]
+    if nbjoueur == 2 or versus:
+        players.append(Player(w, h, start_x=w - 150, controls=AZERTY_P2, name=prenoms[1]))
+    game = Game(w, h, players)
     game_over = False
 
     while not game_over:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True
+                return True          # quitter completement
             if event.type == pygame.KEYDOWN:
+                for p in players:
+                    if event.key == p.controls['cast']:
+                        p.cast_line()
+
                 if event.key == pygame.K_ESCAPE:
-                    return False
-                elif event.key == pygame.K_SPACE:
-                    game.player.cast_line()
+                    return False     # retour au menu
 
         game_over = game.update()
         game.draw(screen)
         pygame.display.flip()
         clock.tick(60)
+        
+    try:
+        for p in players:
+            save_score(p.name, p.score)
+    except Exception as e:
+        print(f"[WARN] Impossible d’enregistrer le score : {e}")
 
+    for p in players:
+        save_score(p.name, p.score)
+        
     # Écran de Game Over
     font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 48)
     game_over_text = f"Game Over! Score: {game.score}"
@@ -405,6 +455,13 @@ def run_game(screen, clock, nbjoueur, prenoms):
     text_y = (screen.get_height() - text_rect.height) // 2
 
     font.render_to(screen, (text_x, text_y), game_over_text, (255, 255, 255))
+    y_base = text_y + text_rect.height + 40  # 40 px sous le titre
+    for p in players:  # 'players' list déjà définie
+        score_text = f"{p.name} : {p.score}"
+        s_surf, s_rect = font.render(score_text, (255, 255, 255))
+        s_x = (screen.get_width() - s_rect.width) // 2
+        screen.blit(s_surf, (s_x, y_base))
+        y_base += s_rect.height + 15
 
     pygame.display.flip()
     pygame.time.delay(3000)
