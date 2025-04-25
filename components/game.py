@@ -302,7 +302,7 @@ class Game:
         self.screen_width = screen_width
         self.screen_height = screen_height
         if players is None:
-        self.player = [Player(screen_width, screen_height,  
+          self.player = [Player(screen_width, screen_height,  
                              start_x=screen_width // 2, controls=ARROWS_P1)]
         else : 
         self.players = players
