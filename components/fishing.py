@@ -101,7 +101,7 @@ class FishingLine:
                 self.sinking_depth = min(self.sinking_depth + self.sinking_speed, 450)
                 self.hook_y = self.water_level + self.sinking_depth
                 
- end_x = self.rod_x + self.current_length * math.cos(self.angle_rad)
+        end_x = self.rod_x + self.current_length * math.cos(self.angle_rad)
         end_y = self.rod_y + self.current_length * math.sin(self.angle_rad)
         #hook_size = 8
         #self.rect = pygame.Rect(
