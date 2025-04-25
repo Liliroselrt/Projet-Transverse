@@ -2,7 +2,12 @@ import pygame
 import pygame.freetype
 import os
 from components.game import run_game
-from components.setupMenu import PlayerSetupMenu
+from utils.utils import *
+from components.historique import *
+
+
+from components.game import *
+from components.setupMenu import *
 
 
 
