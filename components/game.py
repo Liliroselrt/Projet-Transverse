@@ -305,7 +305,7 @@ class Game:
           self.player = [Player(screen_width, screen_height,  
                              start_x=screen_width // 2, controls=ARROWS_P1)]
         else : 
-        self.players = players
+          self.players = players
         self.fishes = []
         self.trashes = []
         self.special_trashes = []
@@ -448,7 +448,7 @@ def run_game(screen, clock, nbjoueur, prenoms):
         
     # Écran de Game Over
     font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 48)
-    game_over_text = f"Game Over! Score: {game.score}"
+    game_over_text = f"Game Over!"
 
     text_rect = font.get_rect(game_over_text)
     text_x = (screen.get_width() - text_rect.width) // 2
