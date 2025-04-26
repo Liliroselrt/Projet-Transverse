@@ -3,7 +3,7 @@ import pygame.freetype
 
 
 class PlayerSetupMenu:
-    def __init__(self, screen, font):
+    def __init__(self, screen, font, forced_players):
         self.screen = screen
         self.font = font
         self.clock = pygame.time.Clock()
@@ -13,7 +13,7 @@ class PlayerSetupMenu:
         self.background = pygame.transform.scale(self.background, (screen.get_width(), screen.get_height()))
 
         self.state = "choose_players"  # étapes : choose_players → show_controls → enter_names → done
-        self.nb_joueurs = None
+        self.nb_joueurs = forced_players
         self.prenoms = []
         self.error_message = ""
         self.active_input = 0
@@ -177,14 +177,14 @@ class PlayerSetupMenu:
             if self.nb_joueurs == 1:
                 instructions = [
                     "Mode 1 Joueur :",
-                    "- Déplacement : Flèches directionnelles ou ZQSD",
+                    "- Déplacement : Flèches directionnelles",
                     "- Canne à pêche : Espace"
                 ]
             else:
                 instructions = [
                     "Mode 2 Joueurs :",
-                    "- Joueur 1 : ZQSD pour se déplacer, A pour pêcher",
-                    "- Joueur 2 : Flèches pour se déplacer, M pour pêcher"
+                    "- Joueur 1 : Flèches pour se déplacer, Espace pour pêcher",
+                    "- Joueur 2 : ZQSD pour se déplacer, E pour pêcher"
                 ]
 
             y_pos = modal_rect.top + 100
