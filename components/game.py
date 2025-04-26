@@ -4,10 +4,10 @@ import math
 import os
 
 from components.fishing import FishingLine
-from components.historique import save_score
+from components.history import save_score
 
-ARROWS_P1 = dict(left=pygame.K_LEFT,  right=pygame.K_RIGHT,
-                 up=pygame.K_UP,     down=pygame.K_DOWN,
+ARROWS_P1 = dict(left=pygame.K_LEFT, right=pygame.K_RIGHT,
+                 up=pygame.K_UP, down=pygame.K_DOWN,
                  cast=pygame.K_SPACE)
 
 AZERTY_P2 = dict(left=pygame.K_q, right=pygame.K_d,
@@ -224,12 +224,12 @@ class Player:
         self.screen_height = screen_height
         self.controls = controls or ARROWS_P1  # défaut : les flèches
         self.name = name
-        
-         # image du bateau
+
+        # image du bateau
         self.boat_img = pygame.image.load('./resources/assets/barque.png').convert_alpha()
         self.boat_img = pygame.transform.scale(self.boat_img, (120, 60))
 
-           # position initiale
+        # position initiale
         if start_x is None:
             self.boat_x = screen_width // 2 - self.boat_img.get_width() // 2
         else:
@@ -240,7 +240,7 @@ class Player:
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
         self.rod_y = self.boat_y  # Canne positionnée au sommet du bateau
 
-        self.fishing_line = FishingLine(self.rod_x, self.rod_y, 
+        self.fishing_line = FishingLine(self.rod_x, self.rod_y,
                                         screen_height - self.boat_y - 20, self.boat_y)
         self.is_fishing = False
         self.score = 0
@@ -248,13 +248,12 @@ class Player:
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 18)
 
     def move(self, keys):
-      
-        if keys[self.controls['left']]  and self.boat_x > 0:
+
+        if keys[self.controls['left']] and self.boat_x > 0:
             self.boat_x -= 3
         if keys[self.controls['right']] and self.boat_x < self.screen_width - self.boat_img.get_width():
             self.boat_x += 3
 
-      
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
         # Ajoutez le réglage de l'angle avec les touches UP/DOWN
@@ -304,9 +303,9 @@ class Game:
         self.screen_width = screen_width
         self.screen_height = screen_height
         if players is None:
-            self.players = [Player(screen_width, screen_height,  
+            self.players = [Player(screen_width, screen_height,
                                    start_x=screen_width // 2, controls=ARROWS_P1)]
-        else : 
+        else:
             self.players = players
         self.fishes = []
         self.trashes = []
@@ -349,18 +348,16 @@ class Game:
 
         # Regarde si le poisson ou un déchet est attrapé
 
-
-      
         for fish in self.fishes[:]:
             for p in self.players:
                 if p.is_fishing and fish.rect.collidepoint(*p.fishing_line.hook_pos):
-                    p.score -= 1 # Pert 1 point par poisson
+                    p.score -= 1  # Pert 1 point par poisson
                     self.fishes.remove(fish)
                     break
             else:
                 if fish.update(self.screen_width, self.screen_height):
                     self.fishes.remove(fish)
-                    
+
         for trash in self.trashes[:]:
             if trash.update(self.screen_width, self.screen_height):
                 self.trashes.remove(trash)
@@ -412,7 +409,7 @@ class Game:
         elapsed_time = (current_time - self.start_time) // 1000
         remaining_time = max(0, self.game_time - elapsed_time)
 
-        #self.font.render_to(screen, (20, 20), f"Score: {self.score}", (255, 255, 255))
+        # self.font.render_to(screen, (20, 20), f"Score: {self.score}", (255, 255, 255))
         self.font.render_to(screen, (20, 50), f"Time: {remaining_time}", (255, 255, 255))
 
 
@@ -427,20 +424,20 @@ def run_game(screen, clock, nbjoueur, prenoms, versus=False):
     while not game_over:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True          # quitter completement
+                return True  # quitter completement
             if event.type == pygame.KEYDOWN:
                 for p in players:
                     if event.key == p.controls['cast']:
                         p.cast_line()
 
                 if event.key == pygame.K_ESCAPE:
-                    return False     # retour au menu
+                    return False  # retour au menu
 
         game_over = game.update()
         game.draw(screen)
         pygame.display.flip()
         clock.tick(60)
-        
+
     try:
         for p in players:
             save_score(p.name, p.score)
@@ -449,7 +446,7 @@ def run_game(screen, clock, nbjoueur, prenoms, versus=False):
 
     for p in players:
         save_score(p.name, p.score)
-        
+
     # Écran de Game Over
     font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 48)
     game_over_text = f"Game Over!"

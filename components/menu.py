@@ -1,14 +1,9 @@
-import pygame
 import pygame.freetype
-import os
-from components.game import run_game
 from utils.utils import *
-from components.historique import *
-
+from components.history import *
 
 from components.game import *
 from components.setupMenu import *
-
 
 
 class Menu:
@@ -19,7 +14,7 @@ class Menu:
         self.show_menu = True
         self.show_rules = False
         self.show_historique = False
-        
+
         # Charge les images
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen.get_width(), screen.get_height()))
@@ -75,9 +70,10 @@ class Menu:
         pygame.draw.rect(self.screen, (46, 204, 113), play_button, border_radius=10)
 
         # Bouton Historique
-        histo_button = pygame.Rect(modal_x + (modal_width - button_width) // 2, first_button_y + 1 * (button_height + spacing), button_width, button_height)
+        histo_button = pygame.Rect(modal_x + (modal_width - button_width) // 2,
+                                   first_button_y + 1 * (button_height + spacing), button_width, button_height)
         pygame.draw.rect(self.screen, (241, 196, 15), histo_button, border_radius=10)
-        
+
         # Bouton Règles
         rules_button = pygame.Rect(modal_x + (modal_width - button_width) // 2,
                                    first_button_y + 2 * (button_height + spacing), button_width, button_height)
@@ -176,11 +172,11 @@ class Menu:
                                     return False
                                 self.show_menu = True
 
-                        
+
                         elif histo_button.collidepoint(event.pos):
                             afficher_historique(self.screen, self.font)
                             self.show_menu = True
-                             
+
                         elif rules_button.collidepoint(event.pos):
                             self.show_menu = False
                             self.show_rules = True

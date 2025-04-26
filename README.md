@@ -67,7 +67,7 @@ demeurer dans leur habitat.
 
 - `main.py` : point d'entrée du jeu
 - `components/` : modules du jeu (menu, joueur, physique, etc.)
-- `assets/` : ressources graphiques et sonores
+- `resources/` : ressources graphiques et sonores
 
 # 📆 Journal de Bord
 
