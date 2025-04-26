@@ -248,16 +248,18 @@ class Player:
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 18)
 
     def move(self, keys):
-        if keys[self.controls['left']] and self.boat_x > 0:
+      
+        if keys[self.controls['left']]  and self.boat_x > 0:
             self.boat_x -= 3
         if keys[self.controls['right']] and self.boat_x < self.screen_width - self.boat_img.get_width():
             self.boat_x += 3
 
+      
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
 
         # Ajoutez le réglage de l'angle avec les touches UP/DOWN
         if not self.is_fishing:  # Vérifier que le joueur ne pêche pas
-            if  keys[self.controls['up']]:
+            if keys[self.controls['up']]:
                 self.fishing_line.adjust_angle(1)  # Augmenter l'angle
             if keys[self.controls['down']]:
                 self.fishing_line.adjust_angle(-1)  # Diminuer l'angle
@@ -302,10 +304,10 @@ class Game:
         self.screen_width = screen_width
         self.screen_height = screen_height
         if players is None:
-          self.player = [Player(screen_width, screen_height,  
-                             start_x=screen_width // 2, controls=ARROWS_P1)]
+            self.players = [Player(screen_width, screen_height,  
+                                   start_x=screen_width // 2, controls=ARROWS_P1)]
         else : 
-          self.players = players
+            self.players = players
         self.fishes = []
         self.trashes = []
         self.special_trashes = []
@@ -347,6 +349,8 @@ class Game:
 
         # Regarde si le poisson ou un déchet est attrapé
 
+
+      
         for fish in self.fishes[:]:
             for p in self.players:
                 if p.is_fishing and fish.rect.collidepoint(*p.fishing_line.hook_pos):
@@ -412,7 +416,7 @@ class Game:
         self.font.render_to(screen, (20, 50), f"Time: {remaining_time}", (255, 255, 255))
 
 
-def run_game(screen, clock, nbjoueur, prenoms):
+def run_game(screen, clock, nbjoueur, prenoms, versus=False):
     w, h = screen.get_width(), screen.get_height()
     players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]
     if nbjoueur == 2 or versus:
