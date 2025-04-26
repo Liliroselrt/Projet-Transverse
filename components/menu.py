@@ -89,7 +89,7 @@ class Menu:
         pygame.draw.rect(self.screen, (231, 76, 60), quit_button, border_radius=10)
 
         # Bouton text
-        jouer_text, _ = self.font.render("JOUER", (255, 255, 255))
+        solo_text, _ = self.font.render("JOUER", (255, 255, 255))
         historique_text, _ = self.font.render("HISTORIQUE", (0, 0, 0))
         regles_text, _ = self.font.render("RÈGLES", (255, 255, 255))
         quitter_text, _ = self.font.render("QUITTER", (255, 255, 255))
