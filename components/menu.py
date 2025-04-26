@@ -45,7 +45,7 @@ class Menu:
         screen_width, screen_height = self.screen.get_size()
 
         modal_width = 600
-        modal_height = 350
+        modal_height = 500
         modal_x = (screen_width - modal_width) // 2
         modal_y = (screen_height - modal_height) // 2
 
@@ -61,9 +61,9 @@ class Menu:
         self.screen.blit(title_surface, (title_x, modal_y + 20))
 
         # Dimensions des boutons
-        button_width = 200
-        button_height = 60
-        spacing = 20
+        button_width = 240
+        button_height = 70
+        spacing = 25
 
         # Position du premier bouton
         title_height = title_surface.get_height()
@@ -175,7 +175,8 @@ class Menu:
                                     self.running = False
                                     return False
                                 self.show_menu = True
-                                
+
+                        
                         elif histo_button.collidepoint(event.pos):
                             afficher_historique(self.screen, self.font)
                             self.show_menu = True
