@@ -95,7 +95,7 @@ class Menu:
         quitter_text, _ = self.font.render("QUITTER", (255, 255, 255))
 
         # Texte centré dans chaque bouton
-         self.screen.blit(solo_text,
+        self.screen.blit(solo_text,
                          (play_button.x + (button_width - solo_text.get_width()) // 2,
                           play_button.y + (button_height - solo_text.get_height()) // 2))
         self.screen.blit(historique_text, (histo_button.x + (button_width - historique_text.get_width()) // 2,
