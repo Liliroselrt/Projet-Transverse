@@ -386,11 +386,19 @@ class Game:
         for p in self.players:
             p.draw(screen)
 
+        # Position horizontale commune pour tous les affichages
+        x_pos = 10
         y_base = 10
+
+        # Affichage des scores des joueurs
         for p in self.players:
             txt, _ = self.font.render(f"{p.name} : {p.score}", (255, 255, 255))
-            screen.blit(txt, (10, y_base))
+            screen.blit(txt, (x_pos, y_base))
             y_base += txt.get_height() + 5
+
+        # Calcul de la position pour le temps restant (sous les scores des joueurs)
+        time_y = y_base + 10  # 10px d'espace supplémentaire
+
         # Affiche les poissons
         for fish in self.fishes:
             fish.draw(screen)
@@ -403,13 +411,12 @@ class Game:
         for special in self.special_trashes:
             special.draw(screen)
 
-        # Affiche le score et le temps restant
+        # Affiche le temps restant aligné avec les scores des joueurs
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) // 1000
         remaining_time = max(0, self.game_time - elapsed_time)
 
-        # self.font.render_to(screen, (20, 20), f"Score: {self.score}", (255, 255, 255))
-        self.font.render_to(screen, (20, 50), f"Time: {remaining_time}", (255, 255, 255))
+        self.font.render_to(screen, (x_pos, time_y), f"Time: {remaining_time}", (255, 255, 255))
 
 
 def run_game(screen, clock, nbjoueur, prenoms, versus=False):
