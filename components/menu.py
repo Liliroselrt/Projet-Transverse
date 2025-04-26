@@ -80,12 +80,12 @@ class Menu:
         
         # Bouton Règles
         rules_button = pygame.Rect(modal_x + (modal_width - button_width) // 2,
-                                   first_button_y + button_height + spacing, button_width, button_height)
+                                   first_button_y + 2 * (button_height + spacing), button_width, button_height)
         pygame.draw.rect(self.screen, (52, 152, 219), rules_button, border_radius=10)
 
         # Bouton Quitter
         quit_button = pygame.Rect(modal_x + (modal_width - button_width) // 2,
-                                  first_button_y + 2 * (button_height + spacing), button_width, button_height)
+                                  first_button_y + 3 * (button_height + spacing), button_width, button_height)
         pygame.draw.rect(self.screen, (231, 76, 60), quit_button, border_radius=10)
 
         # Bouton text
