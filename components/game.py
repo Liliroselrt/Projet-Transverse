@@ -240,8 +240,7 @@ class Player:
         self.rod_x = self.boat_x + self.boat_img.get_width() // 2
         self.rod_y = self.boat_y  # Canne positionnée au sommet du bateau
 
-        self.fishing_line = FishingLine(self.rod_x, self.rod_y,
-                                        screen_height - self.boat_y - 20, self.boat_y)
+        self.fishing_line = FishingLine(self.rod_x, self.rod_y, screen_height - self.boat_y - 20, self.boat_y)
         self.is_fishing = False
         self.score = 0
 

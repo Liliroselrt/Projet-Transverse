@@ -4,7 +4,10 @@ import pygame
 
 SCORE_FILE = os.path.join("resources", "data", "top_scores.json")
 
+
 def save_score(name, score):
+    from datetime import datetime
+
     if not os.path.exists(os.path.dirname(SCORE_FILE)):
         os.makedirs(os.path.dirname(SCORE_FILE))
     if os.path.exists(SCORE_FILE):
@@ -13,10 +16,13 @@ def save_score(name, score):
     else:
         scores = []
 
-    scores.append({"name": name, "score": score})
+    # Ajout de la date au format JJ/MM/AAAA
+    date_str = datetime.now().strftime("%d/%m/%Y")
+    scores.append({"name": name, "score": score, "date": date_str})
     scores = sorted(scores, key=lambda x: x["score"], reverse=True)[:5]
     with open(SCORE_FILE, "w") as f:
         json.dump(scores, f)
+
 
 def load_top_scores():
     if not os.path.exists(SCORE_FILE) or os.path.getsize(SCORE_FILE) == 0:
@@ -28,44 +34,81 @@ def load_top_scores():
     except (json.JSONDecodeError, KeyError, TypeError):
         return []
 
+def charger_historique():
+    """Charge l'historique des scores dans le format attendu par afficher_historique."""
+    if not os.path.exists(SCORE_FILE) or os.path.getsize(SCORE_FILE) == 0:
+        return []
+    try:
+        with open(SCORE_FILE, "r") as f:
+            scores = json.load(f)
+            # Transforme les données pour inclure le champ 'date' attendu par afficher_historique
+            historique = []
+            for entry in scores:
+                # Adapte le format des anciennes entrées qui pourraient ne pas avoir tous les champs
+                historique.append({
+                    "nom": entry.get("name", "Inconnu"),
+                    "score": entry.get("score", 0),
+                    "date": entry.get("date", "Non datée")
+                })
+            return historique
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return []
 
 def afficher_historique(screen, font):
-    scores = load_top_scores() or [("Aucun score", 0)]
-    width, height = screen.get_size()
+    """Affiche l'historique des joueurs sans doublon"""
+    # Fond d'écran
+    background = pygame.image.load('resources/assets/images/fondRegle.jpg')
+    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+    screen.blit(background, (0, 0))
 
-    # arrière-plan semi-transparent
-    overlay = pygame.Surface((width, height))
-    overlay.set_alpha(200)
-    overlay.fill((0, 0, 0))
-    screen.blit(overlay, (0, 0))
+    # Titre
+    title_text, title_rect = font.render("Historique des parties", (255, 255, 255))
+    title_x = (screen.get_width() - title_rect.width) // 2
+    screen.blit(title_text, (title_x, 50))
 
-    # titre
-    title_surf, _ = font.render("TOP 5 SCORES", (255, 255, 255))
-    screen.blit(title_surf, ((width - title_surf.get_width()) // 2, 80))
+    # Charger les données depuis le fichier (ou la base de données)
+    historique = charger_historique()
 
-    # lignes de scores
-    y = 160
-    for nom, score in scores:
-        line_surf, _ = font.render(f"{nom}  :  {score}", (255, 255, 255))
-        screen.blit(line_surf, ((width - line_surf.get_width()) // 2, y))
-        y += 60
+    # Utiliser un dictionnaire pour éliminer les doublons
+    # La clé sera une combinaison du nom et du score (ou un identifiant unique)
+    historique_unique = {}
+    for joueur in historique:
+        # Créer une clé unique pour chaque entrée
+        cle = f"{joueur['nom']}_{joueur['score']}_{joueur['date']}"
+        historique_unique[cle] = joueur
 
-    # bouton retour
-    back_rect = pygame.Rect(width // 2 - 100, y + 40, 200, 60)
-    pygame.draw.rect(screen, (52, 152, 219), back_rect, border_radius=10)
-    back_txt, _ = font.render("RETOUR", (255, 255, 255))
-    screen.blit(back_txt, (back_rect.x + (back_rect.width - back_txt.get_width()) // 2,
-                           back_rect.y + (back_rect.height - back_txt.get_height()) // 2))
+    # Convertir en liste pour l'affichage
+    historique = list(historique_unique.values())
 
-    pygame.display.flip()
+    # Afficher les données
+    y_pos = 150
+    for joueur in historique:
+        info = f"{joueur['nom']} - Score: {joueur['score']} - Date: {joueur['date']}"
+        text_surface, _ = font.render(info, (255, 255, 255))
+        x_pos = (screen.get_width() - text_surface.get_width()) // 2
+        screen.blit(text_surface, (x_pos, y_pos))
+        y_pos += 40
 
-    # boucle d’attente
+    # Bouton retour
+    back_button = pygame.Rect(screen.get_width() // 2 - 100, y_pos + 50, 200, 50)
+    pygame.draw.rect(screen, (231, 76, 60), back_button, border_radius=10)
+
+    text_surface, _ = font.render("Retour", (255, 255, 255))
+    text_x = back_button.x + (back_button.width - text_surface.get_width()) // 2
+    text_y = back_button.y + (back_button.height - text_surface.get_height()) // 2
+    screen.blit(text_surface, (text_x, text_y))
+
+    # Attendre un clic pour revenir
     waiting = True
     while waiting:
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit(); sys.exit()
+                return False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button.collidepoint(event.pos):
+                    waiting = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 waiting = False
-            if event.type == pygame.MOUSEBUTTONDOWN and back_rect.collidepoint(event.pos):
-                waiting = False
+
+    return True
