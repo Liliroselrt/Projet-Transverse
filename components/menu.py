@@ -176,7 +176,7 @@ class Menu:
                                     return False
                                 self.show_menu = True
                                 
-                         elif histo_button.collidepoint(event.pos):
+                        elif histo_button.collidepoint(event.pos):
                             afficher_historique(self.screen, self.font)
                             self.show_menu = True
                              
