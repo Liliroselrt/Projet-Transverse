@@ -173,7 +173,6 @@ class PlayerSetupMenu:
                                            input_rect.y + (input_rect.height - txt_rect.height) // 2))
 
         elif self.state == "show_controls":
-            instructions = []
             if self.nb_joueurs == 1:
                 instructions = [
                     "Mode 1 Joueur :",
@@ -197,7 +196,7 @@ class PlayerSetupMenu:
                     text_surf, text_rect = self.font.render(line, (255, 255, 255))
                     x_pos = modal_rect.centerx - text_rect.width // 2
                     self.screen.blit(text_surf, (x_pos, y_pos))
-                    y_pos += 35  # Réduit l'espacement entre les lignes
+                    y_pos += 45  # Réduit l'espacement entre les lignes
 
         elif self.state == "enter_names":
             # Labels pour les joueurs

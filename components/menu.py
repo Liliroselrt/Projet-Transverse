@@ -86,7 +86,7 @@ class Menu:
 
         # Bouton text
         solo_text, _ = self.font.render("JOUER", (255, 255, 255))
-        historique_text, _ = self.font.render("HISTORIQUE", (0, 0, 0))
+        historique_text, _ = self.font.render("HISTORIQUE", (255, 255, 255))
         regles_text, _ = self.font.render("RÈGLES", (255, 255, 255))
         quitter_text, _ = self.font.render("QUITTER", (255, 255, 255))
 

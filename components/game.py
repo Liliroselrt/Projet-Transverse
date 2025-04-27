@@ -318,10 +318,11 @@ class Game:
 
         # La musique
         self.volume = 0.5  # Volume à 50%
-        pygame.mixer.init()
-        pygame.mixer.music.load('resources/sound/music.mp3')
-        pygame.mixer.music.set_volume(self.volume)
-        pygame.mixer.music.play(-1)  # Répéter en boucle indéfiniment
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.init()
+            pygame.mixer.music.load('resources/sound/music.mp3')
+            pygame.mixer.music.set_volume(self.volume)
+            pygame.mixer.music.play(-1)  # Répéter en boucle indéfiniment
 
     def update(self):
         current_time = pygame.time.get_ticks()
@@ -392,7 +393,7 @@ class Game:
 
         # Affichage des scores des joueurs
         for p in self.players:
-            txt, _ = self.font.render(f"{p.name} : {p.score}", (255, 255, 255))
+            txt, _ = self.font.render(f"{p.name} : {p.score}", (0, 0, 0))
             screen.blit(txt, (x_pos, y_base))
             y_base += txt.get_height() + 5
 
@@ -416,7 +417,7 @@ class Game:
         elapsed_time = (current_time - self.start_time) // 1000
         remaining_time = max(0, self.game_time - elapsed_time)
 
-        self.font.render_to(screen, (x_pos, time_y), f"Time: {remaining_time}", (255, 255, 255))
+        self.font.render_to(screen, (x_pos, time_y), f"Time: {remaining_time}", (0, 0, 0))
 
 
 def run_game(screen, clock, nbjoueur, prenoms, versus=False):
