@@ -79,6 +79,7 @@ demeurer dans leur habitat.
 - __*24 mars :*__ Partie physique et avancée de la canne à pêche
 - __*25 mars :*__ Modification du temps et des points, transitions dans la courbe et création de l'angle de lancement.
 - __*7 avril :*__ Easter Egg, animation, continue code partie Lili-Rose et Youssef.
+- __*1 mai :*__ Mise en place de l'animation au début du jeux 
 
 ### 📚**Répartition des Tâches :**
 
@@ -88,7 +89,7 @@ demeurer dans leur habitat.
   - équation physique,
   - mouvement des joueurs, 
   - mise en scéne du début du jeu,
-- choix d'une musique de fond,
+  - choix d'une musique de fond,
   - design 
 - **Paolo :**
   - mouvement des poissons,
@@ -104,8 +105,7 @@ demeurer dans leur habitat.
   - rentrer le nom des joueurs,
   - faire le menu des touches
 - **Youssef :**
-  - historique des joueurs, 
-  - faire le splash,
+  - historique des joueurs,
   - 1v1, ajout du 2e joueur
 
 ## ✅ Tests et Validation (NON-IMPLEMENTE)
