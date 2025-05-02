@@ -3,7 +3,6 @@ import pygame.freetype
 from utils.utils import *
 import cv2
 from components.menu import Menu
-
 from AffichageFinal import affichage_final
 
 

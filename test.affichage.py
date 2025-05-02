@@ -17,7 +17,7 @@ def test_affichage_final():
 # Appelle directement l'écran de fin
     affichage_final(screen, players)
 
-# Quitte pygame correctement après l'écran de fin
+# Quitte pygame
     pygame.quit()
     sys.exit()
 

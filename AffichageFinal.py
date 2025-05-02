@@ -18,7 +18,6 @@ BLACK = (0, 0, 0)
 GOLD = (255, 215, 0)
 GRAY = (200, 200, 200)
 
-# Charger l'image de fond
 background = pygame.image.load('resources/assets/images/background.jpeg')
 background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
