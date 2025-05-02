@@ -4,6 +4,7 @@ from utils.utils import *
 
 from components.menu import Menu
 
+from AffichageFinal import affichage_final
 
 def main():
     # Initialise Pygame
