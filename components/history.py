@@ -1,39 +1,47 @@
-import os
-import json, sys
-import pygame
+import os    # Accès aux opérations système et chemins de fichiers
+import json, sys    # Gestion JSON pour stocker/charger scores, accès aux paramètres système
+import pygame    # Bibliothèque pour afficher l'historique avec Pygame
 
+# Chemin vers le fichier JSON contenant les meilleurs scores
 SCORE_FILE = os.path.join("resources", "data", "top_scores.json")
 
-
+# Fonction pour sauvegarder un score dans le fichier JSON
 def save_score(name, score):
-    from datetime import datetime
-
+    from datetime import datetime    # Import local pour récupérer la date actuelle
+    
+     # Crée le dossier si nécessaire
     if not os.path.exists(os.path.dirname(SCORE_FILE)):
         os.makedirs(os.path.dirname(SCORE_FILE))
+    # Charge les scores existants si le fichier existe
     if os.path.exists(SCORE_FILE):
         with open(SCORE_FILE, "r") as f:
             scores = json.load(f)
     else:
-        scores = []
+        scores = []    # Sinon initialise une liste vide
 
     # Ajout de la date au format JJ/MM/AAAA
     date_str = datetime.now().strftime("%d/%m/%Y")
     scores.append({"name": name, "score": score, "date": date_str})
+    # Trie les scores par valeur décroissante et conserve les 5 meilleurs
     scores = sorted(scores, key=lambda x: x["score"], reverse=True)[:5]
+    # Écrit la liste mise à jour dans le fichier JSON
     with open(SCORE_FILE, "w") as f:
         json.dump(scores, f)
 
-
+# Charge les 5 meilleurs scores sous forme de liste de tuples (nom, score)
 def load_top_scores():
+    # Si le fichier n'existe pas ou est vide, retourne une liste vide
     if not os.path.exists(SCORE_FILE) or os.path.getsize(SCORE_FILE) == 0:
         return []
     try:
         with open(SCORE_FILE, "r") as f:
             scores = json.load(f)
+            # Retourne une liste de tuples (nom, score)
             return [(e["name"], e["score"]) for e in scores]
     except (json.JSONDecodeError, KeyError, TypeError):
+        # En cas d'erreur de lecture, retourne une liste vide
         return []
-
+# Charge l'historique complet avec noms, scores et dates pour l'affichage
 def charger_historique():
     """Charge l'historique des scores dans le format attendu par afficher_historique."""
     if not os.path.exists(SCORE_FILE) or os.path.getsize(SCORE_FILE) == 0:
@@ -53,7 +61,8 @@ def charger_historique():
             return historique
     except (json.JSONDecodeError, KeyError, TypeError):
         return []
-
+        
+# Affiche l'historique des parties à l'écran Pygame
 def afficher_historique(screen, font):
     """Affiche l'historique des joueurs sans doublon"""
     # Fond d'écran
@@ -101,14 +110,14 @@ def afficher_historique(screen, font):
     # Attendre un clic pour revenir
     waiting = True
     while waiting:
-        pygame.display.flip()
+        pygame.display.flip()    # Actualise l'écran
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return False
+                return False    # Quitte complètement
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if back_button.collidepoint(event.pos):
-                    waiting = False
+                    waiting = False     # Sort de la boucle
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                waiting = False
+                waiting = False    # Sort également sur Échap
 
-    return True
+    return True    # Retourne True pour indiquer un retour normal
