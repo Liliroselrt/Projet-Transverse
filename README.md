@@ -30,7 +30,7 @@ demeurer dans leur habitat.
 ## 🛠️ Technologies utilisées
 
 - **Langage :** Python
-- **Bibliothèques :** Pygame, math, random, json, time
+- **Bibliothèques :** Pygame, opencv, math, random, json, time
 - **Outils de développement :**
     - **PyCharm :** environnement de développement
     - **GitHub :** gestion de versions et collaboration
@@ -42,7 +42,7 @@ demeurer dans leur habitat.
 
 1. Assurez-vous d'avoir Python installé (version 3.8 ou supérieure recommandée)
 2. Clonez ce dépôt : `git clone https://github.com/Liliroselrt/Projet-Transverse`
-3. Installez Pygame : `pip install pygame`
+3. Installez les dépendances : `pip install pygame opencv-python
 4. Lancez le jeu : `python main.py`
 
 ## 🎮 Comment jouer

@@ -1,41 +1,33 @@
-import pygame
 import pygame.freetype
 from utils.utils import *
-import cv2
 from components.menu import Menu
-from AffichageFinal import affichage_final
+import os
+
+from utils.video import start_video
 
 
 def main():
     # Initialise Pygame
-
     pygame.init()
 
-    screen = pygame.display.set_mode((1280, 720))
+    # Récupérer la résolution de l'écran du joueur
+    info = pygame.display.Info()
+    screen_width, screen_height = info.current_w, info.current_h
+
+    # Dimensions standardisées pour tout le jeu
+    WIDTH, HEIGHT = 1280, 720
+
+    # Calculer la position pour centrer la fenêtre
+    os_x = (screen_width - WIDTH) // 2
+    os_y = (screen_height - HEIGHT) // 2
+
+    # Définir la position de la fenêtre et la créer
+    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{os_x},{os_y}"
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Trash & Splash")
     clock = pygame.time.Clock()
 
-    # Recherche vidéo
-    cap = cv2.VideoCapture("resources/animation/animation.mpg")
-
-    # Afficher la vidéo
-    while cap.isOpened():
-        ret, frame = cap.read()
-
-        if not ret:
-            break
-        frame = cv2.resize(frame, (1280, 720))
-
-        # Bonne gestion des couleurs
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = pygame.image.frombuffer(frame.tobytes(), frame.shape[1::-1], "RGB")
-
-        # Gestion de l'image
-        screen.blit(frame, (0, 0))
-        pygame.display.flip()
-        pygame.time.delay(30)
-
-    cap.release() # Arret de la vidéo
+    start_video(screen, clock, WIDTH, HEIGHT)
 
     # Affiche le menu
     Menu(screen, clock).run()

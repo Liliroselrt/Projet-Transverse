@@ -1,10 +1,9 @@
-import pygame    # Bibliothèque principale pour le jeu
-import random    # Pour générer des valeurs aléatoires
-import math      # Pour les calculs trigonométriques
-import os        # Pour gérer les chemins de fichiers
+import pygame  # Bibliothèque principale pour le jeu
+import random  # Pour générer des valeurs aléatoires
+import math  # Pour les calculs trigonométriques
+import os  # Pour gérer les chemins de fichiers
 
 from components.fishing import FishingLine
-from components.history import save_score    # Sauvegarde du score
 
 # Configuration des touches pour le joueur 1 (flèches directionnelles + espace)
 
@@ -266,9 +265,9 @@ class Player:
                 self.fishing_line.adjust_angle(-1)  # Diminuer l'angle
 
     def cast_line(self):
-        self.is_fishing = not self.is_fishing # Alterne ente lancer/retracter
+        self.is_fishing = not self.is_fishing  # Alterne ente lancer/retracter
 
-    def update_line(self): 
+    def update_line(self):
         # Met à jour la position de l'ameçon
         self.fishing_line.update(self.rod_x, self.rod_y, self.is_fishing, 1 / 60)  # En supposant 60 FPS
 
@@ -309,15 +308,15 @@ class Game:
         self.screen_height = screen_height
         if players is None:
             self.players = [Player(screen_width, screen_height,
-                                   start_x=screen_width // 2, controls=ARROWS_P1)] # Liste des joueurs
+                                   start_x=screen_width // 2, controls=ARROWS_P1)]  # Liste des joueurs
         else:
-          #liste des poisson et des déchets 
+            # liste des poisson et des déchets
             self.players = players
-        self.fishes = [] 
+        self.fishes = []
         self.trashes = []
         self.special_trashes = []
         self.score = 0
-        self.game_time = 90  # 90s de jeu
+        self.game_time = 1  # 90s de jeu
         self.start_time = pygame.time.get_ticks()
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 24)
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
@@ -334,7 +333,7 @@ class Game:
     def update(self):
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) // 1000  # Temps écoulé en secondes
-        remaining_time = max(0, self.game_time - elapsed_time)   # Temps restant
+        remaining_time = max(0, self.game_time - elapsed_time)  # Temps restant
 
         keys = pygame.key.get_pressed()  # État de toutes les touches
         for p in self.players:
@@ -426,13 +425,18 @@ class Game:
 
         self.font.render_to(screen, (x_pos, time_y), f"Time: {remaining_time}", (0, 0, 0))
 
+    def end_game(self, screen):
+        """Affiche l'écran de fin de jeu et gère le retour au menu"""
+        game_over_screen = GameOver(screen.get_width(), screen.get_height())
+        game_over_screen.run(screen, self.players)
+
 
 def run_game(screen, clock, nbjoueur, prenoms, versus=False):
     w, h = screen.get_width(), screen.get_height()  # Récupère dimensions de la fenêtre
     players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]  # Création joueur 1
     if nbjoueur == 2 or versus:
-        players.append(Player(w, h, start_x=w - 150, controls=AZERTY_P2, name=prenoms[1]))   # Création joueur 2
-    game = Game(w, h, players)   # Instanciation du jeu
+        players.append(Player(w, h, start_x=w - 150, controls=AZERTY_P2, name=prenoms[1]))  # Création joueur 2
+    game = Game(w, h, players)  # Instanciation du jeu
     game_over = False  # Boucle tant que partie non terminée
 
     while not game_over:
@@ -449,12 +453,12 @@ def run_game(screen, clock, nbjoueur, prenoms, versus=False):
 
         game_over = game.update()  # Logique de mise à jour
         game.draw(screen)  # Rendu graphique
-        pygame.display.flip()   # Affiche la frame
+        pygame.display.flip()  # Affiche la frame
         clock.tick(60)  # Limite à 60 FPS
 
     try:
         for p in players:
-            save_score(p.name, p.score) # sauvegarde
+            save_score(p.name, p.score)  # sauvegarde
     except Exception as e:
         print(f"[WARN] Impossible d’enregistrer le score : {e}")
 
@@ -462,23 +466,5 @@ def run_game(screen, clock, nbjoueur, prenoms, versus=False):
         save_score(p.name, p.score)
 
     # Écran de Game Over
-    font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 48)
-    game_over_text = f"Game Over!"
-
-    text_rect = font.get_rect(game_over_text)
-    text_x = (screen.get_width() - text_rect.width) // 2
-    text_y = (screen.get_height() - text_rect.height) // 2
-
-    font.render_to(screen, (text_x, text_y), game_over_text, (255, 255, 255))
-    y_base = text_y + text_rect.height + 40  # 40 px sous le titre
-    for p in players:  # 'players' list déjà définie
-        score_text = f"{p.name} : {p.score}"
-        s_surf, s_rect = font.render(score_text, (255, 255, 255))
-        s_x = (screen.get_width() - s_rect.width) // 2
-        screen.blit(s_surf, (s_x, y_base))
-        y_base += s_rect.height + 15
-
-    pygame.display.flip()   # Met à jour l'affichage pour l'écran final
-    pygame.time.delay(3000)  # Pause avant de quitter
-
-    return False  # Fin de la fonction, retour au menu
+    game.end_game(screen)
+    return False
