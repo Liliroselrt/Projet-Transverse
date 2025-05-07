@@ -80,6 +80,7 @@ demeurer dans leur habitat.
 - __*25 mars :*__ Modification du temps et des points, transitions dans la courbe et création de l'angle de lancement.
 - __*7 avril :*__ Easter Egg, animation, continue code partie Lili-Rose et Youssef.
 - __*1 mai :*__ Mise en place de l'animation au début du jeux 
+- __*7 mai :*__ Réglage des derniers détails
 
 ### 📚**Répartition des Tâches :**
 
