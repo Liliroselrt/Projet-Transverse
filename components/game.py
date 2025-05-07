@@ -435,9 +435,17 @@ class Game:
 
 def run_game(screen, clock, nbjoueur, prenoms, versus=False):
     w, h = screen.get_width(), screen.get_height()  # Récupère dimensions de la fenêtre
-    players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]  # Création joueur 1
+
+    # Mode 2 joueurs
     if nbjoueur == 2 or versus:
-        players.append(Player(w, h, start_x=w - 150, controls=AZERTY_P2, name=prenoms[1]))  # Création joueur 2
+        # Joueur 1 à gauche avec ZQSD
+        players = [Player(w, h, start_x=150, controls=AZERTY_P2, name=prenoms[0])]
+        # Joueur 2 à droite avec les flèches
+        players.append(Player(w, h, start_x=w - 150, controls=ARROWS_P1, name=prenoms[1]))
+    else:
+        # En mode 1 joueur, garder les flèches pour le joueur 1
+        players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]
+
     game = Game(w, h, players)  # Instanciation du jeu
     game_over = False  # Boucle tant que partie non terminée
 
