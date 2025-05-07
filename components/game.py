@@ -4,6 +4,8 @@ import math  # Pour les calculs trigonométriques
 import os  # Pour gérer les chemins de fichiers
 
 from components.fishing import FishingLine
+from components.history import save_score  # Sauvegarde du score
+from components.game_over import GameOver  # Écran de fin de jeu
 
 # Configuration des touches pour le joueur 1 (flèches directionnelles + espace)
 
@@ -316,7 +318,7 @@ class Game:
         self.trashes = []
         self.special_trashes = []
         self.score = 0
-        self.game_time = 1  # 90s de jeu
+        self.game_time = 60  # 60s de jeu
         self.start_time = pygame.time.get_ticks()
         self.font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'), 24)
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
