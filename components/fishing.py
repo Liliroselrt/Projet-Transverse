@@ -199,25 +199,27 @@ class FishingLine:
             # Méthode normale de dessin quand l'hameçon est complètement dans l'eau
             water_reached = False
             for i in range(1, self.segments + 1):
-                percent = i / self.segments
-                x = self.rod_x + (self.water_entry_x - self.rod_x) * percent
-                h = min(50, abs(self.water_entry_x - self.rod_x) * 0.2)
-                rel_x = percent - 0.5
-                y = self.rod_y + (self.water_level - self.rod_y) * percent - h * (1 - 4 * rel_x * rel_x)
+                percent = i / self.segments # Pourcentage du segment actuel
+                x = self.rod_x + (self.water_entry_x - self.rod_x) * percent     # Interpolation linéaire de la position x
+                h = min(50, abs(self.water_entry_x - self.rod_x) * 0.2)    # Calcul de l'amplitude de la vague à la surface
+                rel_x = percent - 0.5    # Position relative centrée
+                y = self.rod_y + (self.water_level - self.rod_y) * percent - h * (1 - 4 * rel_x * rel_x)    # Calcul de la position y avec effet de vague
 
                 if y > self.water_level and not water_reached:
-                    water_reached = True
-                    points.append((x, self.water_level))
-                    break
-                points.append((x, y))
-
+                    water_reached = True    # On a trouvé le point d'impact
+                    points.append((x, self.water_level))    # Ajoute le point à la surface
+                    break    # On arrête pour éviter d'ajouter des points sous l'eau ici
+                points.append((x, y))    # Ajoute le point sur la courbe
+                
+            # Si aucun point d'impact n'a été trouvé, on ajoute la position d'entrée
             if not water_reached:
                 points.append((self.water_entry_x, self.water_level))
-
+                
+            # Ajout des points pour visualiser le coulage complet
             for i in range(1, 5):
                 depth_factor = i / 4
-                points.append((self.water_entry_x, self.water_level + self.sinking_depth * depth_factor))
-            points.append((self.hook_x, self.hook_y))
+                points.append((self.water_entry_x, self.water_level + self.sinking_depth * depth_factor))    # Chaque point descend progressivement
+            points.append((self.hook_x, self.hook_y))     # Point final: position réelle de l'hameçon sous l'eau
 
         # Dessiner la ligne
         if len(points) > 1:
