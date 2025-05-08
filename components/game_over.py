@@ -5,23 +5,27 @@ import os
 
 class GameOver:
     def __init__(self, screen_width, screen_height):
+        # Dimensions de l'écran pour positionner les éléments
         self.screen_width = screen_width
         self.screen_height = screen_height
+        # Chargement et mise à l'échelle du fond d'écran
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen_width, screen_height))
-
+         # Chargement de la police personnalisée pour titre et texte
         font_path = os.path.join('resources', 'fonts', 'AutourOne.ttf')
-        self.font_title = pygame.freetype.Font(font_path, 100)
-        self.font_text = pygame.freetype.Font(font_path, 60)
-
-        self.pulse_scale = 1.0
-        self.pulse_direction = 1
-        self.clock = pygame.time.Clock()
+        self.font_title = pygame.freetype.Font(font_path, 100)    # Police pour le titre
+        self.font_text = pygame.freetype.Font(font_path, 60)    # Police pour le texte courant
+        
+        # Paramètres pour l'effet de pulsation sur le texte du gagnant
+        self.pulse_scale = 1.0    # Échelle actuelle de la police
+        self.pulse_direction = 1    # Direction de changement (+1 ou -1)
+        self.clock = pygame.time.Clock()    # Horloge pour réguler le rafraîchissement
 
     def draw_text_with_shadow(self, surface, text, font, color, x, y, shadow_color=(0, 0, 0), offset=2):
+        # Dessine d'abord l'ombre décalée
         font.render_to(surface, (x + offset, y + offset), text, shadow_color)
-        text_rect = font.get_rect(text)
-        font.render_to(surface, (x, y), text, color)
+        text_rect = font.get_rect(text)    # Récupère la taille du texte pour positionnement
+        font.render_to(surface, (x, y), text, color)    # Dessine le texte principal
         return text_rect
 
     def run(self, screen, players):
@@ -36,13 +40,15 @@ class GameOver:
                 winner = None  # Égalité
 
         running = True
-        continue_btn_rect = None
+        continue_btn_rect = None    # Rectangle cliquable pour continuer
 
         while running:
+            # Gestion des événements
             for event in pygame.event.get():
+                 # Si clic sur le bouton "continuer"
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if continue_btn_rect and continue_btn_rect.collidepoint(event.pos):
-                        return False
+                        return False    # Sortie de l'écran Game Over
 
             # Affichage
             screen.blit(self.background, (0, 0))
@@ -65,17 +71,19 @@ class GameOver:
                     temp_font = pygame.freetype.Font(os.path.join('resources', 'fonts', 'AutourOne.ttf'),
                                                      int(60 * self.pulse_scale))
                     text_rect = temp_font.get_rect(text)
+                    # Texte doré pour le gagnant
                     self.draw_text_with_shadow(
                         screen, text, temp_font, (255, 215, 0),
                         self.screen_width // 2 - text_rect.width // 2, y_offset
                     )
                 else:
+                    # Texte gris pour les autres joueurs
                     text_rect = self.font_text.get_rect(text)
                     self.draw_text_with_shadow(
                         screen, text, self.font_text, (200, 200, 200),
                         self.screen_width // 2 - text_rect.width // 2, y_offset
                     )
-                y_offset += 100
+                y_offset += 100    # Espace vertical entre les lignes de score
 
             # Instructions pour continuer
             quit_text = "Appuyez ici pour continuer"
@@ -89,7 +97,8 @@ class GameOver:
             # Dessiner un fond pour le bouton
             pygame.draw.rect(screen, (0, 100, 150), continue_btn_rect, border_radius=10)
             pygame.draw.rect(screen, (0, 150, 200), continue_btn_rect, width=3, border_radius=10)
-
+            
+            # Texte du bouton avec ombre
             self.draw_text_with_shadow(
                 screen, quit_text, self.font_text, (255, 255, 255),
                 x_pos, y_pos
@@ -101,7 +110,8 @@ class GameOver:
                 self.pulse_direction = -1
             elif self.pulse_scale < 0.9:
                 self.pulse_direction = 1
-
+                
+            # Rafraîchissement de l'écran et limitation FPS
             pygame.display.flip()
             self.clock.tick(60)
-        return None
+        return None    # Valeur de retour si on sort autrement
