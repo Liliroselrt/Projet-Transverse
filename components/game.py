@@ -21,12 +21,13 @@ AZERTY_P2 = dict(left=pygame.K_q, right=pygame.K_d,
 
 class Fish:
     def __init__(self, screen_width, screen_height):
-        self.speed_x = random.choice([-2, -1, 1, 2])
-        self.speed_y = random.uniform(-0.5, 0.5)
+        self.speed_x = random.choice([-2, -1, 1, 2])  # Détermine la vitesse horizontale aléatoire (-2 à 2)
+        self.speed_y = random.uniform(-0.5, 0.5)  # Détermine la vitesse verticale aléatoire
 
         # Charge une image aléatoire d'un poisson
         fish_num = random.randint(1, 18)
         try:
+            # Tente de charger l'image correspondante
             self.image = pygame.image.load(f'./resources/assets/fishs/{fish_num}.png').convert_alpha()
 
             # Dimensions originales
@@ -36,56 +37,68 @@ class Fish:
             # Calcule l'échelle pour une bonne taille
             target_width = random.randint(50, 90)
             scale_factor = target_width / orig_width
-
+          
+            # Définit les dimensions finales
             self.width = target_width
             self.height = int(orig_height * scale_factor)
-
+          
+            # Redimensionne l'image du poisson
             self.image = pygame.transform.scale(self.image, (self.width, self.height))
 
             # Retourner l'image si le poisson se déplace vers la DROITE (et non vers la gauche)
             if self.speed_x > 0:
                 self.image = pygame.transform.flip(self.image, True, False)
         except:
+            # Si l'image ne charge pas, on utilise une forme et une couleur aléatoires
             self.image = None
             self.color = random.choice([(255, 165, 0), (0, 255, 255), (255, 0, 255)])
             self.width = random.randint(60, 100)
             self.height = random.randint(30, 50)
-
+          
+        # Position initiale hors écran selon la direction
         if self.speed_x > 0:
             self.x = -self.width
         else:
             self.x = screen_width
-
+          
+         # Position verticale aléatoire dans la moitié inférieure de l'écran
         self.y = random.randint(screen_height // 2, screen_height - 50)
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)  # Rectangle de collision (hitbox)
+      
+        # État de capture et valeur du poisson
         self.caught = False
         self.value = random.randint(1, 5)
 
     def update(self, screen_width, screen_height):
+         # Met à jour la position seulement si non attrapé
         if not self.caught:
+          # Avance selon la vitesse
             self.x += self.speed_x
             self.y += self.speed_y
-
+            # Parfois, modifie aléatoirement la vitesse verticale
             if random.random() < 0.02:
                 self.speed_y = random.uniform(-0.5, 0.5)
 
             # Maintenir le poisson dans les limites de l'écran
             if self.y < screen_height // 2:
-                self.y = screen_height // 2
+                self.y = screen_height // 2   # Reste à la limite
                 self.speed_y *= -1
             elif self.y > screen_height - 50:
                 self.y = screen_height - 50
                 self.speed_y *= -1
-
+            # Met à jour la hitbox
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-
+          
+            # Renvoie True si le poisson est complètement sorti de l'écran horizontalement
             if (self.x < -self.width and self.speed_x < 0) or (self.x > screen_width and self.speed_x > 0):
                 return True
         return False
 
     def draw(self, screen):
+       # Affiche seulement si non attrapé
         if not self.caught:
             if self.image:
+                # Dessine l'image
                 screen.blit(self.image, (self.x, self.y))
             else:
                 pygame.draw.ellipse(screen, self.color, self.rect)
@@ -95,8 +108,8 @@ class Fish:
 
 class Trash:
     def __init__(self, screen_width, screen_height):
-        self.speed_x = random.choice([-2, -1, 1, 2])
-        self.speed_y = random.uniform(-0.5, 0.5)
+        self.speed_x = random.choice([-2, -1, 1, 2])  # Vitesse horizontale aléatoire
+        self.speed_y = random.uniform(-0.5, 0.5)  # Vitesse verticale aléatoire
 
         # Charge une image aléatoire d'un déchet
         trash_num = random.randint(1, 14)
@@ -104,39 +117,43 @@ class Trash:
             self.image = pygame.image.load(f'./resources/assets/trash/{trash_num}.png').convert_alpha()
 
             # Dimensions originales
-            orig_width = self.image.get_width()
-            orig_height = self.image.get_height()
+            orig_width = self.image.get_width()  # Largeur originale
+            orig_height = self.image.get_height()   # Hauteur originale
 
             # Calcule l'échelle pour une bonne taille
             target_width = random.randint(30, 70)
             scale_factor = target_width / orig_width
-
+            # Définit dimensions et redimensionne
             self.width = target_width
             self.height = int(orig_height * scale_factor)
 
             self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        except:
+        except:  # Utilise un rectangle gris si pas d'image
             self.image = None
             self.color = random.choice([(100, 100, 100), (150, 150, 150), (200, 200, 200)])
             self.width = random.randint(40, 80)
             self.height = random.randint(20, 40)
-
+          
+        # Position hors écran initiale
         if self.speed_x > 0:
             self.x = -self.width
         else:
             self.x = screen_width
-
+          
+        # Position verticale aléatoire
         self.y = random.randint(screen_height // 2, screen_height - 50)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        # État et valeur fixe
         self.caught = False
         self.value = 1  # Chaque déchet vaut 1 point
 
     def update(self, screen_width, screen_height):
+        # Met à jour la position si non attrapé
         if not self.caught:
             self.x += self.speed_x
             self.y += self.speed_y
-
-            if random.random() < 0.02:
+            
+            if random.random() < 0.02:  # Changement aléatoire de la vitesse verticale
                 self.speed_y = random.uniform(-0.5, 0.5)
 
             # Maintenir les déchets dans les limites de l'écran
@@ -146,16 +163,17 @@ class Trash:
             elif self.y > screen_height - 50:
                 self.y = screen_height - 50
                 self.speed_y *= -1
-
+            # Mise à jour de la hitbox
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-
+            # Retourne True si sorti horizontalement
             if (self.x < -self.width and self.speed_x < 0) or (self.x > screen_width and self.speed_x > 0):
                 return True
         return False
 
     def draw(self, screen):
-        if not self.caught:
+        if not self.caught:   # Affiche si non attrapé
             if self.image:
+                 # Dessine l'image de déchet
                 screen.blit(self.image, (self.x, self.y))
             else:
                 pygame.draw.rect(screen, self.color, self.rect)

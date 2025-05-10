@@ -4,28 +4,32 @@ import math
 
 class FishingLine:
     def __init__(self, rod_x, rod_y, max_length, boat_y):
+         # Position initiale de la canne (coordinates x et y)
         self.rod_x = rod_x
         self.rod_y = rod_y
         self.max_length = max_length
         self.current_length = 0
+        # Indicateur si l'utilisateur est en train de lancer
         self.is_casting = False
         self.segments = 20  # Nombre de segments de ligne pour une courbe plus lisse
+         # Position de l'hameçon au départ (à la canne)
         self.hook_x = rod_x
         self.hook_y = rod_y
 
         # Paramètres physiques
-        self.gravity = 9.81
-        self.initial_velocity = 60.0
-        self.angle_degrees = 60
+        self.gravity = 9.81    # Accélération due à la gravité
+        self.initial_velocity = 60.0    # Vitesse initiale du lancer
+        self.angle_degrees = 60    # Angle de lancer en degrés
         self.angle_rad = math.radians(60)  # Angle de lancement de 60 degrés
 
         # Paramètres de la ligne d'eau (coordonnée y où l'eau commence)
         self.water_level = boat_y + 30
-        self.hook_in_water = False
-        self.water_entry_x = rod_x
-        self.sinking_speed = 4.5
-        self.sinking_depth = 0
-
+        self.hook_in_water = False    # Booléen indiquant si l'hameçon est entré dans l'eau
+        self.water_entry_x = rod_x    # Coordonnée X à laquelle l'hameçon a touché l'eau
+        self.sinking_speed = 4.5    # Vitesse de coulage dans l'eau
+        self.sinking_depth = 0    # Profondeur de coulage actuelle
+        
+        # Rectangle pour la détection de collision (taille de l'hameçon)
         hook_size = 10
         self.rect = pygame.Rect(rod_x - hook_size // 2, rod_y - hook_size // 2, hook_size, hook_size)
         self.hook_pos = (rod_x, rod_y)
@@ -78,30 +82,35 @@ class FishingLine:
 
         # Calculer la position de l'hameçon
         if self.current_length > 0:
-            t = (self.current_length / self.max_length) * 2.0
+            t = (self.current_length / self.max_length) * 2.0    # t représente le temps normalisé de vol
 
             if not self.hook_in_water:
+                 # Calcul de la trajectoire parabolique en vol
                 x_offset = self.initial_velocity * math.cos(self.angle_rad) * t * 10
                 y_offset = self.initial_velocity * math.sin(self.angle_rad) * t * 10 - 0.5 * self.gravity * (
                         t * 10) ** 2
-
+                
+                 # Mise à jour de la position de l'hameçon
                 self.hook_x = self.rod_x + x_offset
                 self.hook_y = self.rod_y - y_offset
-
+                
+                # Détection de l'entrée dans l'eau
                 if self.hook_y >= self.water_level:
                     self.hook_in_water = True
                     self.water_entry_x = self.hook_x
+                    # Fixer la hauteur à la surface
                     self.hook_y = self.water_level
                     self.water_transition = 0.0  # Démarrer la transition
             else:
                 # Mettre à jour la transition
                 if self.water_transition < 1.0:
                     self.water_transition = min(self.water_transition + self.transition_speed, 1.0)
-
+                    
+                 # L'hameçon coule verticalement
                 self.hook_x = self.water_entry_x
                 self.sinking_depth = min(self.sinking_depth + self.sinking_speed, 450)
                 self.hook_y = self.water_level + self.sinking_depth
-
+         # Mise à jour du rectangle de collision
         hook_size = 10
         self.rect = pygame.Rect(
             self.hook_x - hook_size // 2,
@@ -112,10 +121,10 @@ class FishingLine:
         self.hook_pos = (self.hook_x, self.hook_y)
 
     def get_hook_position(self):
-        return (self.hook_x, self.hook_y)
+        return (self.hook_x, self.hook_y)    # Renvoie la position actuelle de l'hameçon
 
     def draw(self, screen):
-        if self.current_length <= 0:
+        if self.current_length <= 0:    # Ne rien dessiner si la ligne n'est pas déployée
             return
 
         # Dessiner la ligne de pêche
@@ -128,29 +137,33 @@ class FishingLine:
             # Calculer les points pour la trajectoire aérienne
             air_points = [(self.rod_x, self.rod_y)]
             for i in range(1, self.segments):
+                # segment_t détermine la progression du point le long de la courbe
                 segment_t = (i / self.segments) * (self.current_length / self.max_length) * 2.0
 
-                x_offset = self.initial_velocity * math.cos(self.angle_rad) * segment_t * 10
+                x_offset = self.initial_velocity * math.cos(self.angle_rad) * segment_t * 10    # Calcul des offsets horizontaux selon la vélocité initiale et l'angle
                 y_offset = self.initial_velocity * math.sin(self.angle_rad) * segment_t * 10 - 0.5 * self.gravity * (
-                        segment_t * 10) ** 2
+                        segment_t * 10) ** 2   # Calcul des offsets verticaux incluant la gravité (positive vers le bas)
 
                 x = self.rod_x + x_offset
                 y = self.rod_y - y_offset
 
                 air_points.append((x, y))
+             # Ajout de la position finale de l'hameçon en vol 
             air_points.append((self.hook_x, self.hook_y))
 
             if not self.hook_in_water:
+                 # On est toujours en vol, on utilise les points aériens
                 points = air_points
             else:
                 # Calculer les points pour la trajectoire aquatique
                 water_points = [(self.rod_x, self.rod_y)]
                 water_reached = False
                 for i in range(1, self.segments + 1):
-                    percent = i / self.segments
+                    percent = i / self.segments    # Proportion du segment courant
                     x = self.rod_x + (self.water_entry_x - self.rod_x) * percent
+                    # Hauteur du "rebond" sous la surface pour un effet de vague
                     h = min(50, abs(self.water_entry_x - self.rod_x) * 0.2)
-                    rel_x = percent - 0.5
+                    rel_x = percent - 0.5    # position relative centrée
                     y = self.rod_y + (self.water_level - self.rod_y) * percent - h * (1 - 4 * rel_x * rel_x)
 
                     if y > self.water_level and not water_reached:
@@ -161,7 +174,7 @@ class FishingLine:
 
                 if not water_reached:
                     water_points.append((self.water_entry_x, self.water_level))
-
+                # Ajouter les étapes de coulage
                 for i in range(1, 5):
                     depth_factor = i / 4
                     water_points.append((self.water_entry_x, self.water_level + self.sinking_depth * depth_factor))
@@ -186,25 +199,27 @@ class FishingLine:
             # Méthode normale de dessin quand l'hameçon est complètement dans l'eau
             water_reached = False
             for i in range(1, self.segments + 1):
-                percent = i / self.segments
-                x = self.rod_x + (self.water_entry_x - self.rod_x) * percent
-                h = min(50, abs(self.water_entry_x - self.rod_x) * 0.2)
-                rel_x = percent - 0.5
-                y = self.rod_y + (self.water_level - self.rod_y) * percent - h * (1 - 4 * rel_x * rel_x)
+                percent = i / self.segments # Pourcentage du segment actuel
+                x = self.rod_x + (self.water_entry_x - self.rod_x) * percent     # Interpolation linéaire de la position x
+                h = min(50, abs(self.water_entry_x - self.rod_x) * 0.2)    # Calcul de l'amplitude de la vague à la surface
+                rel_x = percent - 0.5    # Position relative centrée
+                y = self.rod_y + (self.water_level - self.rod_y) * percent - h * (1 - 4 * rel_x * rel_x)    # Calcul de la position y avec effet de vague
 
                 if y > self.water_level and not water_reached:
-                    water_reached = True
-                    points.append((x, self.water_level))
-                    break
-                points.append((x, y))
-
+                    water_reached = True    # On a trouvé le point d'impact
+                    points.append((x, self.water_level))    # Ajoute le point à la surface
+                    break    # On arrête pour éviter d'ajouter des points sous l'eau ici
+                points.append((x, y))    # Ajoute le point sur la courbe
+                
+            # Si aucun point d'impact n'a été trouvé, on ajoute la position d'entrée
             if not water_reached:
                 points.append((self.water_entry_x, self.water_level))
-
+                
+            # Ajout des points pour visualiser le coulage complet
             for i in range(1, 5):
                 depth_factor = i / 4
-                points.append((self.water_entry_x, self.water_level + self.sinking_depth * depth_factor))
-            points.append((self.hook_x, self.hook_y))
+                points.append((self.water_entry_x, self.water_level + self.sinking_depth * depth_factor))    # Chaque point descend progressivement
+            points.append((self.hook_x, self.hook_y))     # Point final: position réelle de l'hameçon sous l'eau
 
         # Dessiner la ligne
         if len(points) > 1:

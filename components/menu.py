@@ -8,12 +8,12 @@ from components.setupMenu import *
 
 class Menu:
     def __init__(self, screen, clock):
-        self.screen = screen
-        self.clock = clock
-        self.running = True
-        self.show_menu = True
-        self.show_rules = False
-        self.show_historique = False
+        self.screen = screen     # Surface d'affichage principale
+        self.clock = clock    # Horloge pour contrôler le FPS
+        self.running = True    # Flag principal pour la boucle
+        self.show_menu = True     # Indique si le menu principal est affiché
+        self.show_rules = False     # Indique si l'écran des règles est affiché
+        self.show_historique = False     # Indique si l'historique des parties est affiché
 
         # Charge les images
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
@@ -29,31 +29,33 @@ class Menu:
 
     def draw_blurred_background(self):
         """ Creates a blur effect on the background """
-        blurred_background = pygame.transform.smoothscale(self.background, (128, 72))
-        blurred_background = pygame.transform.smoothscale(blurred_background, self.screen.get_size())
-        self.screen.blit(blurred_background, (0, 0))
+        blurred_background = pygame.transform.smoothscale(self.background, (128, 72))     # Réduit la résolution pour lisser l'image
+        blurred_background = pygame.transform.smoothscale(blurred_background, self.screen.get_size())    # Remet à la taille de l'écran
+        self.screen.blit(blurred_background, (0, 0))     # Affiche l'image floutée
 
     def draw_menu(self):
         """ Displays the main menu with Play, Rules, and Quit buttons """
-        self.draw_blurred_background()
+        self.draw_blurred_background()    # Fond flouté
 
-        screen_width, screen_height = self.screen.get_size()
-
+        screen_width, screen_height = self.screen.get_size()    # Dimensions de l'écran
+        
+        # Taille et position du modal central
         modal_width = 600
         modal_height = 500
         modal_x = (screen_width - modal_width) // 2
         modal_y = (screen_height - modal_height) // 2
-
+        
         modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
+        # Surface semi-transparente pour le modal
         modal_surface = pygame.Surface((modal_width, modal_height), pygame.SRCALPHA)
-        pygame.draw.rect(modal_surface, (20, 20, 20, 230), modal_surface.get_rect(), border_radius=15)
+        pygame.draw.rect(modal_surface, (20, 20, 20, 230), modal_surface.get_rect(), border_radius=15)    # Couleur sombre et alpha
         self.screen.blit(modal_surface, modal_rect)
 
         # Titre
         title_font = pygame.freetype.Font(self.font.path, 60)
         title_surface, _ = title_font.render("Trash & Splash", (255, 255, 255))
         title_x = modal_x + (modal_width - title_surface.get_width()) // 2
-        self.screen.blit(title_surface, (title_x, modal_y + 20))
+        self.screen.blit(title_surface, (title_x, modal_y + 20))    # Affiche le titre centré
 
         # Dimensions des boutons
         button_width = 240
@@ -105,7 +107,7 @@ class Menu:
 
     def draw_rules(self):
         """ Displays game rules and return button """
-        self.screen.blit(self.rules_background, (0, 0))
+        self.screen.blit(self.rules_background, (0, 0))    # Fond des règles
 
         screen_width = self.screen.get_width()
 
@@ -144,20 +146,22 @@ class Menu:
     def run(self):
         """ Main menu loop """
         while self.running:
-            self.screen.fill((0, 0, 0))
+            self.screen.fill((0, 0, 0))    # Efface l'écran noir
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.running = False
+                    self.running = False    # Quitte complètement le jeu
                     return False
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    # Retour au menu principal si ESC
                     self.show_menu = True
                     self.show_rules = False
                     self.show_historique = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.show_menu:
+                        # Récupère les boutons pour clic
                         play_button, histo_button, rules_button, quit_button = self.draw_menu()
 
                         if play_button.collidepoint(event.pos):
@@ -166,6 +170,7 @@ class Menu:
                             nb_joueurs, prenoms = player_setup.run()
 
                             if nb_joueurs is not None and prenoms:
+                                # Lance le jeu principal
                                 quit_game = run_game(self.screen, self.clock, nb_joueurs, prenoms)
                                 if quit_game:
                                     self.running = False
@@ -174,29 +179,34 @@ class Menu:
 
 
                         elif histo_button.collidepoint(event.pos):
+                            # Affiche l'historique et revient au menu
                             afficher_historique(self.screen, self.font)
                             self.show_menu = True
 
                         elif rules_button.collidepoint(event.pos):
+                            # Montre l'écran des règles
                             self.show_menu = False
                             self.show_rules = True
 
                         elif quit_button.collidepoint(event.pos):
+                            # Quitte le menu et le jeu
                             self.running = False
                             return False
 
                     elif self.show_rules:
+                        # Si on est sur l'écran des règles
                         back_button = self.draw_rules()
                         if back_button.collidepoint(event.pos):
+                            # Retour au menu principal
                             self.show_rules = False
                             self.show_menu = True
-
+            # Affiche le menu ou les règles selon le flag
             if self.show_menu:
                 self.draw_menu()
             elif self.show_rules:
                 self.draw_rules()
-
+            # Rafraîchit l'affichage et limite à 60 FPS
             pygame.display.flip()
             self.clock.tick(60)
 
-        return False
+        return False    # Retour si on sort de la boucle

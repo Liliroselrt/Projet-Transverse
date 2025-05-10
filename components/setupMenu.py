@@ -4,8 +4,11 @@ import pygame.freetype
 
 class PlayerSetupMenu:
     def __init__(self, screen, font, forced_players):
+        # Surface principale pour dessiner
         self.screen = screen
+        # Police utilisée pour le rendu du texte
         self.font = font
+         # Horloge pour réguler le FPS
         self.clock = pygame.time.Clock()
 
         # Chargement de l'arrière-plan
@@ -13,25 +16,28 @@ class PlayerSetupMenu:
         self.background = pygame.transform.scale(self.background, (screen.get_width(), screen.get_height()))
 
         self.state = "choose_players"  # étapes : choose_players → show_controls → enter_names → done
-        self.nb_joueurs = forced_players
-        self.prenoms = []
-        self.error_message = ""
-        self.active_input = 0
+        self.nb_joueurs = forced_players    # Nombre de joueurs forcé initialement
+        self.prenoms = []    # Liste des prénoms saisis
+        self.error_message = ""    # Message d'erreur à afficher
+        self.active_input = 0     # Index du champ de saisie actif
 
-        self.input_boxes = []
-        self.init_input_boxes()
+        self.input_boxes = []    # Liste des rectangles pour les champs de saisie
+        self.init_input_boxes()     # Initialisation des zones de saisie pour le nombre de joueurs
 
     def wrap_text(self, text, max_width):
+         # Découpe un texte en plusieurs lignes pour ne pas dépasser max_width
         words = text.split(' ')
         lines = []
         current_line = []
         current_width = 0
 
         for word in words:
+            # Teste l'ajout du mot courant
             test_line = ' '.join(current_line + [word])
             test_surf, test_rect = self.font.render(test_line, (255, 255, 255))
 
             if test_rect.width <= max_width:
+                # Si la largeur est acceptable, on ajoute le mot
                 current_line.append(word)
                 current_width = test_rect.width
             else:
@@ -45,7 +51,8 @@ class PlayerSetupMenu:
                     lines.append(word)
                     current_line = []
                     current_width = 0
-
+                    
+        # Ajoute la dernière ligne si non vide
         if current_line:
             lines.append(' '.join(current_line))
 
@@ -58,13 +65,15 @@ class PlayerSetupMenu:
         self.screen.blit(blurred_background, (0, 0))
 
     def init_input_boxes(self):
+        # Initialise les zones de saisie pour entrer 1 ou 2
         screen_width, screen_height = self.screen.get_size()
         self.input_boxes = [
             pygame.Rect(screen_width // 2 - 150, screen_height // 2, 300, 50)
         ]
-        self.text_input = ""
+        self.text_input = ""    # Texte en cours de saisie
 
     def validate_players(self):
+         # Vérifie que l'entrée est un entier 1 ou 2
         try:
             nb = int(self.text_input)
             if nb in [1, 2]:
@@ -78,6 +87,7 @@ class PlayerSetupMenu:
             self.error_message = "Entrée invalide. Tapez 1 ou 2."
 
     def init_name_inputs(self):
+        # Prépare les champs de saisie des prénoms
         screen_width, screen_height = self.screen.get_size()
         modal_width = 700
         modal_height = 500
@@ -122,6 +132,7 @@ class PlayerSetupMenu:
         self.error_message = ""
 
     def validate_names(self):
+        # Vérifie que tous les prénoms sont non vides
         if all(nom.strip() != "" for nom in self.prenoms):
             self.error_message = ""
             return True
@@ -130,6 +141,7 @@ class PlayerSetupMenu:
             return False
 
     def draw_modal(self):
+        # Dessine le cadre semi-transparent central du modal
         screen_width, screen_height = self.screen.get_size()
 
         modal_width = 700
@@ -145,6 +157,7 @@ class PlayerSetupMenu:
         return modal_rect
 
     def draw_player_setup(self):
+        # Affiche l'arrière-plan flou et le modal
         self.draw_blurred_background()
         modal_rect = self.draw_modal()
 
@@ -163,6 +176,7 @@ class PlayerSetupMenu:
 
         # Contenu selon l'état
         if self.state == "choose_players":
+            # Champ de texte pour le nombre de joueurs
             input_rect = self.input_boxes[0]
             color = (52, 152, 219) if self.active_input == 0 else (100, 100, 100)
             pygame.draw.rect(self.screen, color, input_rect, 0, border_radius=5)
@@ -173,6 +187,7 @@ class PlayerSetupMenu:
                                            input_rect.y + (input_rect.height - txt_rect.height) // 2))
 
         elif self.state == "show_controls":
+            # Instructions de contrôle selon le nombre de joueurs
             if self.nb_joueurs == 1:
                 instructions = [
                     "Mode 1 Joueur :",
@@ -249,6 +264,7 @@ class PlayerSetupMenu:
         return None
 
     def run(self):
+        # Boucle principale de ce menu jusqu'à 'done' ou quit
         running = True
 
         while running and self.state != "done":
@@ -269,6 +285,7 @@ class PlayerSetupMenu:
                         self.active_input = (self.active_input + 1) % len(self.input_boxes)
 
                     elif event.key == pygame.K_RETURN:
+                        # Input en fonction de l'état
                         if self.state == "choose_players":
                             self.validate_players()
                         elif self.state == "show_controls":
@@ -278,12 +295,13 @@ class PlayerSetupMenu:
                             self.state = "done"
 
                     elif event.key == pygame.K_BACKSPACE:
+                        # Suppression d'un caractère
                         if self.state == "choose_players":
                             self.text_input = self.text_input[:-1]
                         elif self.state == "enter_names":
                             self.prenoms[self.active_input] = self.prenoms[self.active_input][:-1]
-
-                    elif self.state in ["choose_players", "enter_names"]:
+                        
+                    elif self.state in ["choose_players", "enter_names"]:    # Ajout de caractères
                         # Filtrer pour n'accepter que les chiffres dans le premier écran
                         if self.state == "choose_players" and event.unicode.isdigit():
                             self.text_input += event.unicode
@@ -310,5 +328,6 @@ class PlayerSetupMenu:
 
             pygame.display.flip()
             self.clock.tick(60)
-
+            
+        # Retourne le nombre de joueurs et les prénoms saisis
         return self.nb_joueurs, self.prenoms
