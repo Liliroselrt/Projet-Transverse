@@ -17,7 +17,7 @@ def save_score(name, score):
         with open(SCORE_FILE, "r") as f:
             scores = json.load(f)
     else:
-        scores = []    # Sinon initialise une liste vide
+        scores = []
 
     # Ajout de la date au format JJ/MM/AAAA
     date_str = datetime.now().strftime("%d/%m/%Y")

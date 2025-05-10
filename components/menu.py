@@ -22,7 +22,6 @@ class Menu:
         self.rules_background = pygame.image.load('resources/assets/images/FondRegle2.jpg')
         self.rules_background = pygame.transform.scale(self.rules_background, (screen.get_width(), screen.get_height()))
 
-        # Charge la police d'écriture
         pygame.freetype.init()
         font_path = os.path.join('resources', 'fonts', 'AutourOne.ttf')
         self.font = pygame.freetype.Font(font_path, 36)

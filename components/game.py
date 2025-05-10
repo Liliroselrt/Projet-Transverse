@@ -342,7 +342,6 @@ class Game:
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen_width, screen_height))
 
-        # La musique
         self.volume = 0.5  # Volume à 50%
         if not pygame.mixer.music.get_busy():
             pygame.mixer.init()
