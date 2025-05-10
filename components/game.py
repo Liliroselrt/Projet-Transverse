@@ -223,14 +223,14 @@ class SpecialTrash(Trash):
 
 
 class Player:
-    def __init__(self, screen_width, screen_height, start_x=None, controls=None, name=""):
+    def __init__(self, screen_width, screen_height, start_x=None, controls=None, name="",barque="barque.png"):
         self.screen_width = screen_width  # Stocke largeur écran
         self.screen_height = screen_height  # Stocke hauteur écran
         self.controls = controls or ARROWS_P1  # défaut : les flèches
         self.name = name  # Nom du joueur pour l'affichage des scores
 
         # image du bateau
-        self.boat_img = pygame.image.load('./resources/assets/barque.png').convert_alpha()
+        self.boat_img = pygame.image.load('./resources/assets/' + barque).convert_alpha()
         self.boat_img = pygame.transform.scale(self.boat_img, (120, 60))
 
         # position initiale
@@ -441,7 +441,7 @@ def run_game(screen, clock, nbjoueur, prenoms, versus=False):
         # Joueur 1 à gauche avec ZQSD
         players = [Player(w, h, start_x=150, controls=AZERTY_P2, name=prenoms[0])]
         # Joueur 2 à droite avec les flèches
-        players.append(Player(w, h, start_x=w - 150, controls=ARROWS_P1, name=prenoms[1]))
+        players.append(Player(w, h, start_x=w - 150, controls=ARROWS_P1, name=prenoms[1], barque="barque2.png"))
     else:
         # En mode 1 joueur, garder les flèches pour le joueur 1
         players = [Player(w, h, start_x=150, controls=ARROWS_P1, name=prenoms[0])]

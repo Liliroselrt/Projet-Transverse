@@ -66,7 +66,7 @@ def charger_historique():
 def afficher_historique(screen, font):
     """Affiche l'historique des joueurs sans doublon"""
     # Fond d'écran
-    background = pygame.image.load('resources/assets/images/fondRegle.jpg')
+    background = pygame.image.load('resources/assets/images/fondRegle2.jpg')
     background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
     screen.blit(background, (0, 0))
 

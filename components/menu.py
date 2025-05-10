@@ -19,7 +19,7 @@ class Menu:
         self.background = pygame.image.load('resources/assets/images/background.jpeg')
         self.background = pygame.transform.scale(self.background, (screen.get_width(), screen.get_height()))
 
-        self.rules_background = pygame.image.load('resources/assets/images/FondRegle.jpg')
+        self.rules_background = pygame.image.load('resources/assets/images/FondRegle2.jpg')
         self.rules_background = pygame.transform.scale(self.rules_background, (screen.get_width(), screen.get_height()))
 
         # Charge la police d'écriture
